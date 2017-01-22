@@ -1,0 +1,182 @@
+#!/usr/bin/expect
+
+# get_patrons.exp
+# James Staub
+# Nashville Public Library
+
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 0 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START get_patrons"
+
+# INNOPAC LOG IN
+source innopac_login.exp
+
+# CREATE PATRON REVIEW FILE
+expect "M > MANAGEMENT information*Choose one*\)"
+send "M"
+expect "L > Create LISTS of records*Choose one*\)"
+send "L"
+expect "Please key your initials :"
+send "$INNOPACinitials\r"
+expect "Please key your password :"
+send "$INNOPACinitialsPassword\r"
+expect "076 > *Choose one*\)"
+send "076"
+expect "N > NEW BOOLEAN search*Choose one\)"
+send "N"
+expect "Are you sure you want to delete the current review file?*\)"
+send "y"
+expect "P > PATRON list*Choose one*\)"
+send "P"
+expect "28 CREATED:*Enter code in front of desired field"
+send "28"
+expect "CREATED*Enter boolean condition*\)"
+send "<"
+expect "CREATED*<*mo-dy-year"
+send "12312037"
+expect "Enter action*S to START search \)"
+send "S"
+expect "What name would you like to give this file of records?"
+send "$name-05\r"
+set timeout -1
+expect "Press <SPACE> to continue"
+send " "
+set timeout $wait
+expect "U > Output USER-selected format*Choose one*\)"
+send "U"
+expect "C > CREATE a new file for output*Choose one*\)"
+send "C"
+expect "27 RECORD #:*Output Item #1 >"
+send "27"
+expect "05 P TYPE:*Output Item #2 >"
+send "05"
+expect "12 MBLOCK:*Output Item #3 >"
+send "12"
+expect "n PATRN NAME:*Output Item #4 >"
+send "n"
+expect "a ADDRESS:*Output Item #5 >"
+send "a"
+expect "h G/ML ADDR:*Output Item #6 >"
+send "h"
+expect "28 CREATED:*Output Item #7 >"
+send "28"
+expect "01 EXP DATE:*Output Item #8 >"
+send "01"
+expect "22 CIRCACTIVE:*Output Item #9 >"
+send "22"
+expect "29 UPDATED:*Output Item #10 >"
+send "29"
+expect "t HOME PHONE:*Output Item #11 >"
+send "t"
+expect "p G/WK PHONE:*Output Item #12 >"
+send "p"
+expect "z EMAIL ADDR:*Output Item #13 >"
+send "z"
+expect "23 NOTICE PREF:*Output Item #14 >"
+send "23"
+expect "09 BIRTH DATE:*Output Item #15 >"
+send "09"
+expect "b CARD #:*Output Item #16 >"
+send "b"
+expect "03 PCODE2:*Output Item #17 >"
+send "03"
+expect "10 HOLD LIBR:*Output Item #18 >"
+send "10"
+expect "g G. NAME:*Output Item #19 >"
+send "g"
+expect "m MESSAGE:*Output Item #20 >"
+send "m"
+expect "x NOTE:*Output Item #21 >"
+send "x"
+expect "Output Item #22 >"
+send "\r"
+expect "1 > Field Delimiter*Choose one*\)"
+send "1"
+expect "1 > Control character*Choose one*\)"
+send "1"
+expect "Decimal value  \(0-127\)"
+send "9\r"
+expect "2 > Text Qualifier*Choose one*\)"
+send "2"
+expect "3 > None*Choose one*\)"
+send "3"
+expect "3 > Repeated Field Delimiter*\)"
+send "3"
+expect "2 > ASCII character*Choose one*\)"
+send "2"
+expect "ASCII character"
+send "|"
+expect "C > CREATE a new file for output*Choose one*\)"
+send "C"
+expect "File name:"
+send "$name-05\r"
+set timeout -1
+expect "File creation in progress"
+expect "File creation completed!*Output the file now? \(y/n\)"
+send "n"
+set timeout $wait
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+
+close
+
+# RETRIEVE PATRONS FROM MILLENNIUM
+spawn scp $solarisUser@$host:$solarisPath/listexp/$name-05.out $localPath$name-05.txt
+set timeout -1
+expect "Password"
+send "$solarisUserPassword\r"
+expect "100%*\n"
+close
+set timeout $wait
+
+logWrite $logFile "COMPLETE get_patrons"
+
+logWrite $logFile "START format_patrons"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "bash format_patrons.sh\r"
+set timeout -1
+expect -re $prompt
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_patrons"
+
+logWrite $logFile "START format_items_whohadit"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "bash format_items_whohadit.sh\r"
+set timeout -1
+expect -re $prompt
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_items_whohadit"
+
+logWrite $logFile "START format_transitem"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "bash format_transitem.sh\r"
+set timeout -1
+expect -re $prompt
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_transitem"
+
+

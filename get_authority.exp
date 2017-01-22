@@ -1,0 +1,90 @@
+#!/usr/bin/expect
+
+# get_authority.exp
+# James Staub
+# Nashville Public Library
+
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 0 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START get_authority"
+
+# INNOPAC LOG IN
+source innopac_login.exp
+
+# AUTHORITY RECORD EXTRACT
+expect "A > ADDITIONAL system functions*Choose one*\)"
+send "A"
+expect "M > Read/write MARC records*Choose one*\)"
+send "M"
+expect "Please key your initials :"
+send "$INNOPACinitials\r"
+expect "Please key your password :"
+send "$INNOPACinitialsPassword\r"
+expect "O > OUTPUT MARC records to another system using tape or FTS*Choose one*\)"
+send "O"
+expect "C > CREATE file of unblocked MARC records*Choose one*\)"
+send "C"
+expect "Enter name of file"
+send "$name-06\r"
+expect "R > from a RANGE of record numbers*Choose one*\)"
+send "R"
+expect "AUTHORITY*Enter starting record # :"
+send "a"
+expect "_"
+send "\r"
+expect "Enter ending   record # :"
+send "\r"
+expect "Is the range correct? \(y/n\)"
+send "y"
+expect "S > START sending records"
+send "S"
+set timeout -1
+expect "RECORD CONVERSION STATISTICS*Q > QUIT*Choose one*\)"
+set timeout $wait
+send "Q"
+expect "Press <SPACE> to continue"
+send " "
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Press <SPACE> to continue"
+send " "
+# QUIT here appears on ADDITIONAL options, will time out
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+
+close
+
+# RETRIEVE AUTHORITY FILE FROM MILLENNIUM
+spawn scp $solarisUser@$host:$solarisPath/$name-06.out $localPath$name-06.mrc
+set timeout -1
+expect "Password"
+send "$solarisUserPassword\r"
+expect "100%*\n"
+close
+set timeout $wait
+
+logWrite $logFile "COMPLETE get_authority"
+logWrite $logFile "START format_authority"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "php MILLENNIUM_EXTRACT.php\r"
+set timeout -1
+expect -re $prompt
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_authority"
+

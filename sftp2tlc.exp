@@ -1,0 +1,35 @@
+#!/usr/bin/expect
+
+# sftp2tlc.exp
+# James Staub
+# Nashville Public Library
+
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 0 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START sftp2tlc"
+
+spawn sftp $tlcSftpUser@$tlcSftpHost
+expect "password:"
+send "$tlcSftpUserPassword\n"
+expect "sftp>"
+send "cd $tlcSftpPath\n"
+expect "sftp>"
+send "put "
+set date [clock format [clock seconds] -format "%Y%m%d"]
+send $date
+send "_Nashville_millennium.7z\n"
+set timeout -1
+expect "sftp>"
+send "exit\n"
+set timeout $wait
+
+logWrite $logFile "COMPLETE sftp2tlc"

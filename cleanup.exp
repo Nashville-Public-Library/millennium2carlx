@@ -1,0 +1,35 @@
+#!/usr/bin/expect
+
+# cleanup.exp
+# James Staub
+# Nashville Public Library
+# DELETE FILES FROM SOLARIS LEST THEY GET APPENDED
+
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 0 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START cleanup"
+
+# LOG INTO MILLENNIUM AND DELETE FILES
+spawn ssh -l $solarisUser $host
+expect "Password: "
+sleep 1
+send "$solarisUserPassword\r"
+expect $solarisPrompt
+send "rm -f $solarisPath/$name-*.p\r"
+expect $solarisPrompt
+send "rm -f $solarisPath/listexp/$name-*\r"
+expect $solarisPrompt
+send "rm -f $solarisPath/$name-*.out\r"
+expect $solarisPrompt
+close
+
+logWrite $logFile "COMPLETE cleanup"

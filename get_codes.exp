@@ -1,0 +1,110 @@
+#!/usr/bin/expect
+
+# get_codes.exp
+# James Staub
+# Nashville Public Library
+# PRINT BRANCH CODES TO FILE # BRANCH CODES, LOCATION CODES
+# PRINT FIXED-LENGTH CODES TO FILE # P TYPE, MAT TYPE, ETC
+
+exp_internal 1 ; # 1 = verbose debugging to stdout
+log_user 1 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START get_codes"
+
+# INNOPAC LOG IN
+source innopac_login.exp
+
+# PRINT BRANCH CODES TO FILE # BRANCH CODES, LOCATION CODES
+expect "M > MANAGEMENT information*Choose one*\)"
+send "M"
+expect "I > INFORMATION about the system*Choose one*\)"
+send "I"
+expect "C > CODES used*Choose one*\)"
+send "C"
+expect "B > BRANCH codes*Choose one*\)"
+send "B"
+expect "P > PRINT*Choose one*\)"
+send "P"
+expect "3 > File save*Choose one*\)"
+send "3"
+expect "Is File save ready?  \(y/n\)"
+send "y"
+expect "File_name :"
+# saves to /iiidb/marc/$name-01
+send "$name-01\r"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+
+# PRINT FIXED-LENGTH CODES TO FILE # P TYPE, MAT TYPE, ETC
+expect "M > MANAGEMENT information*Choose one*\)"
+send "M"
+expect "I > INFORMATION about the system*Choose one*\)"
+send "I"
+expect "C > CODES used*Choose one*\)"
+send "C"
+expect "X > FIXED-length codes*Choose one*\)"
+send "X"
+expect "P > PRINT*Choose one*\)"
+send "P"
+expect "3 > File save*Choose one*\)"
+send "3"
+expect "Is File save ready?  \(y/n\)"
+send "y"
+expect "File_name :"
+# saves to /iiidb/marc/$name-02
+send "$name-02\r"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+
+close
+
+# RETRIEVE BRANCH CODES FROM MILLENNIUM
+spawn scp $solarisUser@$host:$solarisPath/$name-01.p $localPath$name-01.txt
+set timeout -1
+expect "Password"
+send "$solarisUserPassword\r"
+expect "100%*\n"
+close
+set timeout $wait
+
+# RETRIEVE FIXED-LENGTH CODES FROM MILLENNIUM
+spawn scp $solarisUser@$host:$solarisPath/$name-02.p $localPath$name-02.txt
+set timeout -1
+expect "Password"
+send "$solarisUserPassword\r"
+expect "100%*\n"
+close
+set timeout $wait
+
+logWrite $logFile "COMPLETE get_codes"
+
+logWrite $logFile "START format_codes"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "bash format_codes.sh\r"
+set timeout -1
+expect -re $prompt
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_codes"
