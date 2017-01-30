@@ -6,5 +6,5 @@ Gathers, exports, reformats, compresses, and delivers:
   item data
   patron data
   item+patron checkouts data
-  item+patron fines data
+  item+patron fines data (using III Fines Payment API)
   item+patron holds data
