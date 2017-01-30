@@ -23,10 +23,10 @@ send "$tlcSftpUserPassword\n"
 expect "sftp>"
 send "cd $tlcSftpPath\n"
 expect "sftp>"
-send "put "
+send "put ../data/"
 set date [clock format [clock seconds] -format "%Y%m%d"]
 send $date
-send "_Nashville_millennium.7z\n"
+send "_Nashville_Millennium.7z\n"
 set timeout -1
 expect "sftp>"
 send "exit\n"
