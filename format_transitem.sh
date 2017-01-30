@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# format_transitem.sh
+# TRANSITEM FINES processed in format_transitem_fines.sh
+
 # TRANSITEM HOLDS
 perl -F'\t' -lane '
 	@G;
@@ -42,6 +45,8 @@ perl -pi -e '$_ = "" if ( $. == 1 )' ../data/TRANSITEM_HOLDS.txt
 sort -t'|' -k 4 ../data/TRANSITEM_HOLDS.txt > ../data/SORTED_TRANSITEM_HOLDS.txt
 # LOOKUP PATRON
 join -a 1 -t'|' -1 4 -2 1 -o 1.1 1.2 1.3 1.4 2.3 1.6 1.7 1.8 1.9 1.10 1.11 2.4 1.13 1.14 1.15 1.16 1.17 1.18 1.19 1.20 1.21 1.22 1.23 1.24 ../data/SORTED_TRANSITEM_HOLDS.txt ../data/SORTED_LOOKUP_PATRON.txt > ../data/TRANSITEM_HOLDS.txt
+# ADD CARL HEADERS
+perl -pi -e 'print "ITEM|ITEMBARCODE|TRANSCODE|PATRONID|PATRONBARCODE|RENEW|PICKUP|TRANSDATE|DUEORNOTNEEDEDAFTERDATE|RETURNDATE|LASTACTIONDATE|BORROWERTYPE|BRANCH|HOLDINGBRANCH|SITE|MEDIA|LOCATION|DATAFLAG1|DATAFLAG3|DATAFLAG4|AMOUNTDEBITED|AMOUNTPAID|NOTES|\n" if $. == 1' ../data/TRANSITEM_HOLDS.txt
 
 # TRANSITEM CHECKOUT
 perl -F'\t' -lane '
@@ -61,14 +66,9 @@ perl -F'\t' -lane '
 	$F[3]=".".$F[3]; # patron record id with dot
 	$F[1] eq "" ? $F[1]=substr($F[0],0,9) : $F[1]=$F[1]; # BARCODE [blank] replaced by item record number with i prefix and check digit
 	$F[0]=".".$F[0]; # item record id with dot
-# TO DO: transformations on STATUS
 	print join q/|/, @F[0..10]' ../data/millennium_extract-04.txt > ../data/TRANSITEM_CHECKOUT.txt
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/TRANSITEM_CHECKOUT.txt
-
-# TRANSITEM FINES processed in format_transitem_fines.sh
-
-# CONCATENATE TRANSITEM FILES (FINES WILL BE ADDED FOLLOWING COMPLETION)
-cat ../data/TRANSITEM_HOLDS.txt > ../data/TRANSITEM.txt
-cat ../data/TRANSITEM_CHECKOUT.txt >> ../data/TRANSITEM.txt
+# ADD CARL HEADERS
+perl -pi -e 'print "ITEM|ITEMBARCODE|TRANSCODE|PATRONID|PATRONBARCODE|RENEW|PICKUP|TRANSDATE|DUEORNOTNEEDEDAFTERDATE|RETURNDATE|LASTACTIONDATE|BORROWERTYPE|BRANCH|HOLDINGBRANCH|SITE|MEDIA|LOCATION|DATAFLAG1|DATAFLAG3|DATAFLAG4|AMOUNTDEBITED|AMOUNTPAID|NOTES|\n" if $. == 1' ../data/TRANSITEM_CHECKOUT.txt
 
