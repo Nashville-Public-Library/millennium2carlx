@@ -6,6 +6,12 @@
 # MILLENNIUM->CARL.X MIGRATION DATA EXTRACTION
 # Millennium 2014 2.0.0_15
 
+echo "eliminate educator duplicates\n"
+echo "fix get_patrons_with_fines.exp\n"
+echo "fix get_patrons.exp\n"
+echo "fix get_bibliographic.exp - the format isn't launching?\n"
+exit
+
 # DELETE FILES FROM SOLARIS LEST OLD FILES GET APPENDED
 expect cleanup.exp
 
@@ -41,8 +47,8 @@ done
 # DELETE FILES FROM SOLARIS 
 expect cleanup.exp
 
-# COMPRESS FILES
-bash 7z.sh
+# COMPRESS FILES SHOULD WAIT UNTIL fines.sh IS COMPLETE
+# bash 7z.sh
 
 # DELIVER FILES
 
