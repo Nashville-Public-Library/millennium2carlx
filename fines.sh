@@ -62,6 +62,6 @@ cat ../data/fines-output.* >> ../data/fines-output
 rm -f ../data/fines-output.*
 rm -f ../data/fines-patronIds.*
 
-bash format_transitem_fines.sh
+bash ./format_transitem_fines.sh
 
 
