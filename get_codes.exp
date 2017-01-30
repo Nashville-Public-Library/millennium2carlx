@@ -6,8 +6,8 @@
 # PRINT BRANCH CODES TO FILE # BRANCH CODES, LOCATION CODES
 # PRINT FIXED-LENGTH CODES TO FILE # P TYPE, MAT TYPE, ETC
 
-exp_internal 1 ; # 1 = verbose debugging to stdout
-log_user 1 ; # 1 = send screens to stdout
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 0 ; # 1 = send screens to stdout
 
 # READ CONFIG.PWD.INI
 source read_config.exp
