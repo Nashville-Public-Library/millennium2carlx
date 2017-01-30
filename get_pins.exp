@@ -1,0 +1,118 @@
+#!/usr/bin/expect
+
+# get_pins.exp
+# James Staub
+# Nashville Public Library
+# PRINT PATRON RECORD IDS, ENCRYPTED PIN, BIRTH DATE TO BE USED IN GET_PINS
+
+exp_internal 1 ; # 1 = verbose debugging to stdout
+log_user 1 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START get_pins"
+
+# INNOPAC LOG IN
+source innopac_login.exp
+
+# CREATE PATRONS WITH FINES REVIEW FILE
+expect "M > MANAGEMENT information*Choose one*\)"
+send "M"
+expect "L > Create LISTS of records*Choose one*\)"
+send "L"
+expect "Please key your initials :"
+send "$INNOPACinitials\r"
+expect "Please key your password :"
+send "$INNOPACinitialsPassword\r"
+expect "Select review file to work on :"
+# TO DO: PICK THE BEST REVIEW FILE 57 or 076 or 117
+send "076"
+expect "N > NEW BOOLEAN search, delete the review file*Choose one\)"
+send "N"
+expect "Are you sure you want to delete the current review file?*\)"
+send "y"
+expect "P > PATRON list*Choose one*\)"
+send "P"
+expect "= PIN:"
+send "="
+expect "PIN*Enter boolean condition*\)"
+send "~"
+expect "PIN*<>"
+send "\r"
+expect "PIN*<>"
+expect "Enter action*S to START search*\)" ; # Does not work to capture phrase... text appears in block, probably precedes MONEY OWED
+send "S"
+expect "What name would you like to give this file of records?"
+send "$name-patronsWithPins\r"
+set timeout -1
+expect "Press <SPACE> to continue"
+send " "
+set timeout $wait
+expect "U > Output USER-selected format*Choose one*\)"
+send "U"
+expect "C > CREATE a new file for output*Choose one*\)"
+send "C"
+expect "27 RECORD #:*Output Item #1 >"
+send "27"
+expect "= PIN:*Output Item #2 >"
+send "="
+expect "09 BIRTH DATE:*Output Item #3 >"
+send "09"
+expect "Output Item #4 >"
+send "\r"
+expect "1 > Field Delimiter*Choose one*\)"
+send "1"
+expect "1 > Control character*Choose one*\)"
+send "1"
+expect "Decimal value  \(0-127\)"
+send "9\r"
+expect "2 > Text Qualifier*Choose one*\)"
+send "2"
+expect "3 > None*Choose one*\)"
+send "3"
+expect "3 > Repeated Field Delimiter*\)"
+send "3"
+expect "2 > ASCII character*Choose one*\)"
+send "2"
+expect "ASCII character"
+send "|"
+expect "C > CREATE a new file for output*Choose one*\)"
+send "C"
+expect "File name:"
+send "$name-patronsWithPins\r"
+set timeout -1
+expect {
+	"$name-patronsWithPins.out already exists. Overwrite it" {
+		send "y\r"
+	}
+}
+expect "File creation in progress"
+expect "File creation completed*Output the file now?"
+send "n\r"
+set timeout $wait
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+expect "Q > QUIT*Choose one*\)"
+send "Q"
+close
+
+# RETRIEVE PATRONS WITH PINS
+spawn scp $solarisUser@$host:$solarisPath/listexp/$name-patronsWithPins.out $localPath$name-patronsWithPins.txt
+set timeout -1
+expect "Password"
+send "$solarisUserPassword\r"
+expect "100%*\n"
+close
+set timeout $wait
+
+logWrite $logFile "COMPLETE get_pins"
