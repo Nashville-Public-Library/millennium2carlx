@@ -81,7 +81,8 @@ logWrite $logFile "START format_bibliographic"
 set prompt {\$ $}
 spawn bash
 expect -re $prompt
-send "cp $localPath$name-07.mrc $localPath/BIBLIOGRAPHIC.mrc\r"
+# Sparky aliases cp -> cp -i[nteractive]. "command cp" circumvents the alias
+send "command cp ../data/$name-07.mrc ../data/BIBLIOGRAPHIC.mrc\r"
 set timeout -1
 expect -re $prompt
 close
