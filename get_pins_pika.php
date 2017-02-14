@@ -2,7 +2,8 @@
 
 require "patronapi.php";
 
-$thread = $argv[1];
+//$thread = $argv[1];
+$thread = "clobber";
 
 // Transform 7 digit record number to Millennium record number with check digit
 // Check digit calculation as per IGR #105781
@@ -24,7 +25,12 @@ function rNum2rId ($r,$n) {
 
 $validUserPinsFile = fopen("../data/validUserPins.txt.$thread", "w");
 $invalidUserPinsFile = fopen("../data/invalidUserPins.txt.$thread", "w");
-$pikaUsers = file("../data/pikaUsers.txt.$thread", FILE_IGNORE_NEW_LINES);
+//$pikaUsers = file("../data/pikaUsers.txt.$thread", FILE_IGNORE_NEW_LINES);
+//$pikaUsers = file("../data/pin_validate_patrons.txt", FILE_IGNORE_NEW_LINES);
+$pikaUsers = file("../data/pin_clobber_patrons.txt", FILE_IGNORE_NEW_LINES);
+
+
+/*
 foreach ($pikaUsers as $user) {
 	$u = explode("\t",$user);
 //	echo "$u[0]\t$u[1]\n";
@@ -44,26 +50,32 @@ echo ".";
 }
 fclose($validUserPinsFile);
 fclose($invalidUserPinsFile);
+*/
 
 // phase 2: clobber patronapi for PINs not stored in Pika. Seed list = create list patron PIN != "". EXCEPT patron/pin pairs in phase 1
 
-/*
+// pins.txt is a file of known patron pins sorted by frequency - so we guess the most likely pins first
 $pins = file('../data/pins.txt', FILE_IGNORE_NEW_LINES);
 
-foreach ($users as $u) {
+foreach ($pikaUsers as $user) {
+	$u = explode("\t",$user);
+	echo "PATRON .p$u[0]: ";
+//foreach ($users as $u) {
 	foreach ($pins as $p) {
 		$q=str_pad($p,4,"0",STR_PAD_LEFT);
-		$r=check_validation($u,$p);
+//		$r=check_validation($u,$p);
+		$r=check_validation(".p$u[0]",$p);
 		echo "$p ";
 		if ($r["RETCOD"]==1&&$r["ERRNUM"]=4) { continue; }
-		var_dump($r);
-		if ($r["RETCOD"]==0) { 
-			echo "\n\n$u:$p\n";
+//		var_dump($r);
+		if (isset($r["RETCOD"]) && $r["RETCOD"]==0) {
+			fwrite($validUserPinsFile, "$u[0]|$u[1]\n");
+//			echo "\n\n$u:$p\n";
+			echo "\n\n.p$u[0]:$p\n";
 			echo date("c")."\n";
 			break;
 		}
 	}
 }
-*/
 
 ?>
