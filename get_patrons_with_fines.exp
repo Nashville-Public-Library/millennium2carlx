@@ -90,7 +90,8 @@ expect {
 	}
 }
 expect "File creation in progress"
-expect "File creation completed!*Output the file now?"
+expect "File creation completed!"
+expect "Output the file now?"
 send "n\r"
 set timeout $wait
 expect "Q > QUIT*Choose one*\)"
