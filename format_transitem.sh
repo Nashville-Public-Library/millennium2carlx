@@ -5,40 +5,46 @@
 
 # TRANSITEM HOLDS
 perl -F'\t' -lane '
-	@G;
 	$F[25] eq "" ? do {next;} : do {
-		@hold = split /, /, $F[25];
-		$G[17] = "||||||" ; # DATAFLAG1|DATAFLAG3|DATAFLAG4|AMOUNTDEBITED|AMOUNTPAID|NOTES|, NOT APPROPRIATE FOR HOLDS
-		($G[16],$G[13]) = $F[12] =~ m/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/;
-		$G[15] = $F[6]; # MEDIA
-		$G[14]; # SITE
-		$G[12]; # BRANCH WHERE TRANSACTION OCCURRED, NOT APPROPRIATE FOR HOLDS
-		$G[11]; # BORROWERTYPE
-		$G[8..10]; # DUEORNOTNEEDEDAFTERDATE, RETURNDATE, LASTACTIONDATE, NOT APPROPRIATE FOR HOLDS
-		($G[7]) = @hold[2]=~m/^P=(.+)$/; $G[7] =~ s/^(\d{2})-(\d{2})-(\d{2})$/20$3-$1-$2/; # HOLD PLACED DATE
-		($G[6]) = @hold[8]=~m/^PU=(.+)$/; # PICKUP
-		$G[5]; # RENEW, NOT APPROPRIATE FOR HOLDS
-		$G[4]; # PATRON BARCODE; INSERTED IN join BELOW
-		($G[3]) = @hold[0]=~m/^P\#\=(\d+)$/; # PATRON NUMBER patron_num
+		@H;
+	        @H = split(/\|/,$F[25]);
+	        foreach(@H) {
+			@G;
+			@hold = split /, /, $_;
+			$G[17] = "||||||" ; # DATAFLAG1|DATAFLAG3|DATAFLAG4|AMOUNTDEBITED|AMOUNTPAID|NOTES|, NOT APPROPRIATE FOR HOLDS
+			($G[16],$G[13]) = $F[12] =~ m/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/;
+			$G[15] = $F[6]; # MEDIA
+			$G[14]; # SITE
+			$G[12]; # BRANCH WHERE TRANSACTION OCCURRED, NOT APPROPRIATE FOR HOLDS
+			$G[11]; # BORROWERTYPE
+			$G[8..10]; # DUEORNOTNEEDEDAFTERDATE, RETURNDATE, LASTACTIONDATE, NOT APPROPRIATE FOR HOLDS
+			($G[7]) = @hold[2]=~m/^P=(.+)$/; $G[7] =~ s/^(\d{2})-(\d{2})-(\d{2})$/20$3-$1-$2/; # HOLD PLACED DATE
+			($G[6]) = @hold[8]=~m/^PU=(.+)$/; # PICKUP
+			$G[5]; # RENEW, NOT APPROPRIATE FOR HOLDS
+			$G[4]; # PATRON BARCODE; INSERTED IN join BELOW
+			($G[3]) = @hold[0]=~m/^P\#\=(\d+)$/; # PATRON NUMBER patron_num
 # Transform 7 digit record number to Millennium dot number with check digit
 # Check digit calculation as per IGR #105781
 # http://csdirect.iii.com/manual_2009b/rmil_records_numbers.html
-		@j = split //, $G[3];
-		my $sum;
-		for my $k (0 .. $#j) {
-			$sum += $j[$k]*(8-$k);
-		}
-		$checksum = $sum % 11;
-		if ($checksum == 10) { $checksum = "x"; }
-		$G[3] = ".p" . $G[3] . $checksum;
-		$F[3] eq "-" ? $G[2] = "R*" : # TRANSCODE - ITEM LEVEL HOLD
-		$F[3] eq "t" ? $G[2] = "IH" : # TRANSCODE - IN TRANSIT HOLD
-		$F[3] eq "!" ? $G[2] = "H" : # TRANSCODE - HOLD SHELF
-		$G[2] = $F[3]; # TRANSCODE = MILLENNIUM ITEM STATUS [probaby f]
-		$F[2] eq "" ? $G[1]=substr($F[1],1,9) : $G[1]=$F[2]; # BARCODE [blank] replaced by item record number with i prefix and check digit
-		$G[0]=".".$F[1]; # item record id with dot
-	};
-	print join q/|/, @G' ../data/millennium_extract-03.txt > ../data/TRANSITEM_HOLDS.txt
+			@j = split //, $G[3];
+			my $sum;
+			for my $k (0 .. $#j) {
+				$sum += $j[$k]*(8-$k);
+			}
+			$checksum = $sum % 11;
+			if ($checksum == 10) { $checksum = "x"; }
+			$G[3] = ".p" . $G[3] . $checksum;
+			$F[3] eq "-" ? $G[2] = "R*" : # TRANSCODE - ITEM LEVEL HOLD
+			$F[3] eq "t" ? $G[2] = "IH" : # TRANSCODE - IN TRANSIT HOLD
+			$F[3] eq "!" ? $G[2] = "H" : # TRANSCODE - HOLD SHELF
+			$G[2] = $F[3]; # TRANSCODE = MILLENNIUM ITEM STATUS [probaby f]
+			$F[2] eq "" ? $G[1]=substr($F[1],1,9) : $G[1]=$F[2]; # BARCODE [blank] replaced by item record number with i prefix and check digit
+			$G[0]=".".$F[1]; # item record id with dot
+			print join q/|/, @G;
+		};
+	}
+	' ../data/millennium_extract-03.txt > ../data/TRANSITEM_HOLDS.txt
+
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/TRANSITEM_HOLDS.txt
 # SORT TRANSITEM_HOLDS
