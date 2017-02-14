@@ -13,14 +13,16 @@
 # Launch multiple fines.php processes which
 # Extract Millennium patron fines data via Fines Payment API
 
+# TO DO: get_patrons_with_fines.exp is not completing - or starting? - and I don't know why.
 # TO DO: RERUN PATRONS WITH ERRORS
 
 #echo "Start time"
 #date
 
+# TURN ON GET PATRONS WITH FINES 
 expect get_patrons_with_fines.exp
 
-perl -F'\t' -lane '$F[1]=substr($F[1],1); $o+=$F[1]; END { print "TOTAL FINES: $o\n"; }' ../data/millennium_extract-patronsWithFines.txt 
+#perl -F'\t' -lane '$F[1]=substr($F[1],1); $o+=$F[1]; END { print "TOTAL FINES: $o\n"; }' ../data/millennium_extract-patronsWithFines.txt 
 perl -F'\t' -lane 'print $F[0]' ../data/millennium_extract-patronsWithFines.txt > ../data/fines-patronIds
 
 total_lines=$(wc -l <$2)
@@ -63,5 +65,3 @@ rm -f ../data/fines-output.*
 rm -f ../data/fines-patronIds.*
 
 bash ./format_transitem_fines.sh
-
-
