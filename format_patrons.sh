@@ -23,8 +23,9 @@ sort -t'|' -k 1 ../data/LOOKUP_PATRON.txt > ../data/SORTED_LOOKUP_PATRON.txt
 perl -F'\t' -lane '
 # exclude MNPS patrons
 #$F[1] eq "19" || $F[1] eq "30" || $F[1] eq "33" || $F[1] eq "35" ? do {next;} : do {
-        # TO DO: ENSURE ALL SPONSOR INFORMATION IS TRANSFERRED
-        $F[18] =~ s/\|/^/g; $F[18] .= "|"; # SPONSOR AND FINAL PIPE
+# 20170306 MILLENNIUM GUARDIAN/GUARANTOR INFORMATION MOVED CARL.X TARGET FIELD FROM SPONSOR TO PATRON NOTE
+#        $F[18] =~ s/\|/^/g; $F[18] .= "|"; # SPONSOR AND FINAL PIPE
+	$F[18] = "|"; # SPONSOR [BLANK] AND FINAL PIPE
         $F[2] eq "c" ? do {$COLLECTIONSTATUS = "2";} : ($F[1] =~ /^(0|2|3|4|5|6|12|15|30)$/ ? do {$COLLECTIONSTATUS = "1";} : do {$COLLECTIONSTATUS = "78"});
         $F[17] = "$COLLECTIONSTATUS|$F[17]";
         $F[14] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[14] =~ s/^[-\s]+$//;
@@ -89,6 +90,22 @@ perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON.txt
 perl -pi -e 'print "PATRONID|PATRONBARCODE|BTY|STATUS|ADDR|LAST NAME|FIRST NAME|MIDDLE NAME|SUFFIX|STREET1|CITY1|STATE1|ZIP1|STREET2|CITY2|STATE2|ZIP2|REGDATE|EXPDATE|ACTDATE|EDITDATE|USERID|PH1|PH2|EMAIL|LANGUAGE|EMAILNOTICES|BIRTHDATE|ALTERNATEID|DEFAULTBRANCH|COLLECTIONSTATUS|PREFERRED_BRANCH|SPONSOR|\n" if $. == 1' ../data/PATRON.txt
 
 # PATRON_NOTE.txt
+
+# PATRON NOTE GUARANTOR/GUARDIAN
+perl -F'\t' -lane '
+        $F[18] eq "" ? do {next;} : do {
+		$F[0]=".".$F[0]; # patron record id with dot
+                @f = split(/\|/,$F[18]);
+                foreach(@f) {
+                        $_ = "|600||$_";
+                        $_ = $F[0].$_."|";
+                        print $_;
+                };
+        };
+	' ../data/millennium_extract-05.txt > ../data/PATRON_NOTE_GUARANTOR.txt
+# REMOVE MILLENNIUM HEADERS
+perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON_NOTE_GUARANTOR.txt
+
 # PATRON NOTE MESSAGE
 # TO DO : CATEGORIZE MESSAGES
 perl -F'\t' -lane '
@@ -133,8 +150,9 @@ perl -F'\t' -lane '
 	' ../data/millennium_extract-05.txt > ../data/PATRON_NOTE_NOTE.txt
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON_NOTE_NOTE.txt
-# TO DO: CONCATENATE ALL PATRON_NOTE FILES
-cat ../data/PATRON_NOTE_MESSAGE.txt > ../data/PATRON_NOTE.txt
+# CONCATENATE ALL PATRON_NOTE FILES
+cat ../data/PATRON_NOTE_GUARANTOR.txt > ../data/PATRON_NOTE.txt
+cat ../data/PATRON_NOTE_MESSAGE.txt >> ../data/PATRON_NOTE.txt
 cat ../data/PATRON_NOTE_NOTE.txt >> ../data/PATRON_NOTE.txt
 # REMOVE PATRON NOTE FILES
 rm -f ../data/PATRON_NOTE_*.txt
