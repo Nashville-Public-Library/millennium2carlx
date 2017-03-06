@@ -20,7 +20,7 @@
 #date
 
 # TURN ON GET PATRONS WITH FINES 
-expect get_patrons_with_fines.exp
+#expect get_patrons_with_fines.exp
 
 #perl -F'\t' -lane '$F[1]=substr($F[1],1); $o+=$F[1]; END { print "TOTAL FINES: $o\n"; }' ../data/millennium_extract-patronsWithFines.txt 
 perl -F'\t' -lane 'print $F[0]' ../data/millennium_extract-patronsWithFines.txt > ../data/fines-patronIds
@@ -56,12 +56,12 @@ done
 #echo "\n\n"
 
 # TO DO: make file shuffling paths derive from args
-rm -f ../data/fines-errors
+#rm -f ../data/fines-errors
 cat ../data/fines-errors.* >> ../data/fines-errors
-rm -f ../data/fines-errors.*
-rm -f ../data/fines-output
+#rm -f ../data/fines-errors.*
+#rm -f ../data/fines-output
 cat ../data/fines-output.* >> ../data/fines-output
-rm -f ../data/fines-output.*
-rm -f ../data/fines-patronIds.*
+#rm -f ../data/fines-output.*
+#rm -f ../data/fines-patronIds.*
 
 bash ./format_transitem_fines.sh
