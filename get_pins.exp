@@ -5,8 +5,8 @@
 # Nashville Public Library
 # PRINT PATRON RECORD IDS, ENCRYPTED PIN, BIRTH DATE TO BE USED IN GET_PINS
 
-exp_internal 1 ; # 1 = verbose debugging to stdout
-log_user 1 ; # 1 = send screens to stdout
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 0 ; # 1 = send screens to stdout
 
 # READ CONFIG.PWD.INI
 source read_config.exp
@@ -62,9 +62,9 @@ expect "27 RECORD #:*Output Item #1 >"
 send "27"
 expect "= PIN:*Output Item #2 >"
 send "="
-expect "09 BIRTH DATE:*Output Item #3 >"
-send "09"
-expect "Output Item #4 >"
+#expect "09 BIRTH DATE:*Output Item #3 >"
+#send "09"
+expect "Output Item #3 >"
 send "\r"
 expect "1 > Field Delimiter*Choose one*\)"
 send "1"
@@ -87,13 +87,14 @@ send "C"
 expect "File name:"
 send "$name-patronsWithPins\r"
 set timeout -1
-expect {
-	"$name-patronsWithPins.out already exists. Overwrite it" {
-		send "y\r"
-	}
-}
+#expect {
+#	"$name-patronsWithPins.out already exists. Overwrite it" {
+#		send "y\r"
+#	}
+#}
 expect "File creation in progress"
-expect "File creation completed*Output the file now?"
+expect "File creation completed"
+expect "Output the file now? \(y/n\)"
 send "n\r"
 set timeout $wait
 expect "Q > QUIT*Choose one*\)"
