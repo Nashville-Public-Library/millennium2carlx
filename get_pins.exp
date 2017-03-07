@@ -6,7 +6,7 @@
 # PRINT PATRON RECORD IDS, ENCRYPTED PIN, BIRTH DATE TO BE USED IN GET_PINS
 
 exp_internal 0 ; # 1 = verbose debugging to stdout
-log_user 0 ; # 1 = send screens to stdout
+log_user 1 ; # 1 = send screens to stdout
 
 # READ CONFIG.PWD.INI
 source read_config.exp
@@ -17,6 +17,7 @@ source read_config.exp
 source log.exp
 set logFile "$localPath$name.log"
 logWrite $logFile "START get_pins"
+logWrite $logFile "START get patrons with pins"
 
 # INNOPAC LOG IN
 source innopac_login.exp
@@ -68,10 +69,10 @@ expect "Output Item #3 >"
 send "\r"
 expect "1 > Field Delimiter*Choose one*\)"
 send "1"
-expect "1 > Control character*Choose one*\)"
-send "1"
-expect "Decimal value  \(0-127\)"
-send "9\r"
+expect "2 > ASCII character*Choose one*\)"
+send "2"
+expect "ASCII character"
+send ":"
 expect "2 > Text Qualifier*Choose one*\)"
 send "2"
 expect "3 > None*Choose one*\)"
@@ -115,5 +116,24 @@ send "$solarisUserPassword\r"
 expect "100%*\n"
 close
 set timeout $wait
+logWrite $logFile "COMPLETE get patrons with pins"
 
-logWrite $logFile "COMPLETE get_pins"
+
+# JOHN
+logWrite $logFile "START decrypt PINs"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "cd john-1.8.0/run\r"
+expect -re $prompt
+send "./john --incremental=digits ../../../data/millennium_extract-patronsWithPins.txt\r"
+set timeout -1
+expect -re $prompt
+send "./john --show ../../../data/millennium_extract-patronsWithPins.txt | awk -F: '{print \".\"\$1\"|\"\$2\"|\"}' > ../../../data/PATRON_PIN.txt\r"
+expect -re $prompt
+close
+
+set timeout $wait
+logWrite $logFile "COMPLETE decrypt PINs"
+
+
