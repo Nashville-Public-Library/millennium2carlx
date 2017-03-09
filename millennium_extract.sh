@@ -26,6 +26,10 @@ expect get_title_level_holds.exp &
 # GET CODES LISTS
 expect get_codes.exp &
 
+# GET PINS (NOT BACKGROUND!)
+expect get_pins.exp
+./format_pin.sh &
+
 # GET ITEMS (NOT BACKGROUND!)
 expect get_items.exp
 
@@ -50,5 +54,6 @@ expect cleanup.exp
 # bash 7z.sh
 
 # DELIVER FILES
+# expect sftp2tlc.exp
 
 exit

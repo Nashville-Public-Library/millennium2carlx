@@ -118,22 +118,4 @@ close
 set timeout $wait
 logWrite $logFile "COMPLETE get patrons with pins"
 
-
-# JOHN
-logWrite $logFile "START decrypt PINs"
-set prompt {\$ $}
-spawn bash
-expect -re $prompt
-send "cd john-1.8.0/run\r"
-expect -re $prompt
-send "./john --incremental=digits ../../../data/millennium_extract-patronsWithPins.txt\r"
-set timeout -1
-expect -re $prompt
-send "./john --show ../../../data/millennium_extract-patronsWithPins.txt | awk -F: '{print \".\"\$1\"|\"\$2\"|\"}' > ../../../data/PATRON_PIN.txt\r"
-expect -re $prompt
-close
-
-set timeout $wait
-logWrite $logFile "COMPLETE decrypt PINs"
-
-
+exit
