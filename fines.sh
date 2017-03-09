@@ -20,7 +20,7 @@
 #date
 
 # TURN ON GET PATRONS WITH FINES 
-#expect get_patrons_with_fines.exp
+expect get_patrons_with_fines.exp
 
 #perl -F'\t' -lane '$F[1]=substr($F[1],1); $o+=$F[1]; END { print "TOTAL FINES: $o\n"; }' ../data/millennium_extract-patronsWithFines.txt 
 perl -F'\t' -lane 'print $F[0]' ../data/millennium_extract-patronsWithFines.txt > ../data/fines-patronIds
