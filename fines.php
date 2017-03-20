@@ -94,7 +94,7 @@ foreach ($patronIds as $id) {
 			$result = new stdClass();
 		}
 		$result->error = "$id : Online Payment is currently not available for this patron.";
-var_dump($fault->faultstring);
+//var_dump($fault->faultstring);
 		$failcode[1] = "No error code found";
 		preg_match('/code = (\d+),/',$fault->faultstring,$failCode);
 		$result->error .= " Error #$failCode[1]. ";
@@ -118,6 +118,8 @@ var_dump($fault->faultstring);
 		}
 	}
 	foreach($patronField['patronFines'] AS $fine) {
+		// RECORD ONLY Lost Book, Manual and NOT lost card, and Replacement fines
+	   if ($fine->chargeType == "LostBook" || ($fine->chargeType == "Manual" && preg_match('/\bCARD\b/i',$fine->description)===0) || $fine->chargeType == "Replacement") {
 		if ($fine->itemRecordNum > 0) {
 			$fine->itemRecordNum = rNum2rId("i",$fine->itemRecordNum);
 		} else {
@@ -179,6 +181,7 @@ var_dump($fault->faultstring);
 				$buffer .= implode("|", $record)."\n";
 			}
 		}
+	   }
 	}
 	$count++;	
 //	echo ".";
