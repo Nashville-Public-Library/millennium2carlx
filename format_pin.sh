@@ -6,7 +6,7 @@
 
 # JOHN
 cd john-1.8.0/run/
-./john --incremental=digits ../../../data/millennium_extract-patronsWithPins.txt
+./john --incremental=digits ../../../data/millennium_extract-patronsWithPins.txt > /dev/null 
 ./john --show ../../../data/millennium_extract-patronsWithPins.txt | awk -F: '{print "."$1"|"$2"|"}' > ../../../data/PATRON_PIN.txt
 cd ../../
 
