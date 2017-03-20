@@ -6,7 +6,7 @@
 # PRINT PATRON RECORD IDS, ENCRYPTED PIN, BIRTH DATE TO BE USED IN GET_PINS
 
 exp_internal 0 ; # 1 = verbose debugging to stdout
-log_user 1 ; # 1 = send screens to stdout
+log_user 0 ; # 1 = send screens to stdout
 
 # READ CONFIG.PWD.INI
 source read_config.exp
