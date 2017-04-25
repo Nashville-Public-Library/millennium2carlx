@@ -85,6 +85,10 @@ foreach ($patronIds as $id) {
 	}
 	$patron = new stdClass();
 	try {
+		// Millennium does not seem to like Fines Payment API requests from 03:00:00 to 03:01:00. Skip a couple minutes if it's around 3AM.
+		if(date("H:i")=="02:59"||date("H:i")=="03:00") {
+			sleep(120);
+		}
 		$client = new SoapClient(null, array('location' => "$hostname:$port$path", 'uri' => $uri));
 		$result = $client->searchPatrons($username, $password, $id);
 //var_dump($result);
