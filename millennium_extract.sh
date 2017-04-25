@@ -26,6 +26,9 @@ expect get_title_level_holds.exp &
 # GET CODES LISTS
 expect get_codes.exp &
 
+# GET PATRONS READING HISTORY OPT IN
+expect get_patron_reading_history_opt_in.exp &
+
 # GET PINS (NOT BACKGROUND INITIALLY!)
 expect get_pins.exp
 ./format_pin.sh &

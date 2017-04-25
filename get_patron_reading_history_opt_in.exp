@@ -1,0 +1,62 @@
+#!/usr/bin/expect
+
+# get_patron_reading_history_opt_in.exp
+# James Staub
+# Nashville Public Library
+
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 1 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START get_patron_reading_history_opt_in"
+
+# TITLE LEVEL HOLDS EXTRACT
+# copy mysql dump of holds database from waldo to catalog
+spawn scp $solarisUser@$host:/iiidb/mysql/dumps/pfile.dump $localPath/pfile.dump
+set timeout -1
+expect "Password"
+send "$solarisUserPassword\r"
+expect "100%*\n"
+close
+# restore pfile.dump, execute query to output file, drop restored db
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "mysql -u root -p < $localPath/pfile.dump\r"
+expect "Enter password:"
+send "$mysqlUserPassword\r"
+expect -re $prompt
+# TO DO: braces, double quotes and expect tcl variables... $localPath does not work below, so I use ../data/ instead
+send {mysql -u root -p -e 'SELECT patron.patronNum AS PATRONID, patron.optIn AS READINGHISTORYOPTIN FROM patron WHERE patron.optIn=1 ORDER BY patron.patronNum;' pfile > ../data/patron_reading_history_opt_in.txt }
+send "\r"
+expect "Enter password:"
+send "$mysqlUserPassword\r"
+expect -re $prompt
+send {mysql -u root -p -e 'DROP DATABASE pfile;'}
+send "\r"
+expect "Enter password:"
+send "$mysqlUserPassword\r"
+expect -re $prompt
+send "rm -f $localPath/pfile.dump\r"
+close
+set timeout $wait
+
+logWrite $logFile "COMPLETE get_patron_reading_history_opt_in"
+
+logWrite $logFile "START format_patron_reading_history_opt_in"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+send "bash format_patron_reading_history_opt_in.sh\r"
+set timeout -1
+expect -re $prompt
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_patron_reading_history_opt_in"
