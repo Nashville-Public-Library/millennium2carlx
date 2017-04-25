@@ -56,12 +56,21 @@ done
 #echo "\n\n"
 
 # TO DO: make file shuffling paths derive from args
-#rm -f ../data/fines-errors
+rm -f ../data/fines-errors
 cat ../data/fines-errors.* >> ../data/fines-errors
-#rm -f ../data/fines-errors.*
-#rm -f ../data/fines-output
-cat ../data/fines-output.* >> ../data/fines-output
-#rm -f ../data/fines-output.*
-#rm -f ../data/fines-patronIds.*
+rm -f ../data/fines-errors.*
+sort ../data/fines-errors
+# TO DO: fines.php run fines-redux-patronIds
+#awk '{print substr($1,2)}' ../data/fines-errors > fines-redux-patronIds
+#awk '{print substr($1,2)}' ../data/fines-errors > ../data/fines-patronIds
+#bash fines.sh 10 ../data/fines-patronIds
+
+rm -f ../data/fines-output
+cat ../data/fines-output.* >> ../data/fines-output-raw
+sort ../data/fines-output-raw | uniq > ../data/fines-output
+rm -f ../data/fines-output.*
+rm -f ../data/fines-patronIds.*
+
+sleep 60
 
 bash ./format_transitem_fines.sh
