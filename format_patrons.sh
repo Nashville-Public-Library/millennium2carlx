@@ -128,6 +128,7 @@ perl -F'\t' -lane '
 	' ../data/millennium_extract-05.txt > ../data/PATRON_NOTE_MESSAGE.txt
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON_NOTE_MESSAGE.txt
+
 # PATRON NOTE NOTE
 # TO DO : CATEGORIZE NOTES
 perl -F'\t' -lane '
@@ -135,13 +136,19 @@ perl -F'\t' -lane '
 		$F[0]=".".$F[0]; # patron record id with dot
                 @f = split(/\|/,$F[20]);
                 foreach(@f) {
+			$NOTETYPE = "";
+			# APPROVED USER
+	        	if ( $_ =~ s/^(.*)((?:APPROVED|AUTHORIZED) USER):*\s*(.*)$/APPROVED USER: $1$3/i ) {
+				$F_ =~ s/  +/ /g;
+				$NOTETYPE = "110";
+			}
                         if ( $_ =~ m/^(.*)\b((\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4}))(.*)$/ ) {
                                 if (length($3) == 1) { $notem = "0".$3; } elsif (length($3) == 2) { $notem = $3; }
                                 if (length($4) == 1) { $noted = "0".$4; } elsif (length($4) == 2) { $noted = $4; }
                                 if (length($5) == 2) { if (substr($5,0,1) <2) { $notey = "20".$5; } elsif (substr($5,0,1) == 9) { $notey = "19".$5; }} elsif (length($5) == 4) { $notey = $5; }
-                                $_ = "||$notey-$notem-$noted|$1$2$6";
+                                $_ = "|$NOTETYPE|$notey-$notem-$noted|$1$2$6";
                         } else {
-                                $_ = "|||$_";
+                                $_ = "|$NOTETYPE||$_";
                         }
                         $_ = $F[0].$_."|";
                         print $_;
