@@ -17,21 +17,26 @@ sort -t'|' -k 1 ../data/LOOKUP_ITEM.txt > ../data/SORTED_LOOKUP_ITEM.txt
 # TIME CONSUMED: ABOUT 3 MINUTES!
 # TODO: check each record for pipe characters, e.g., multiple barcodes, and figure out how to eliminate them!
 perl -F'\t' -lane '
-	$F[13] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[13] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[13] =~ s/^[-\s]+$//; # CREATIONDATE
-	$F[13] = "||||".$F[13]."|||"; # INSERT 4 BLANK COLUMNS PRECEDING AND 2 BLANK COLUMNS FOLLOWING CREATIONDATE FOR CALL NUMBER BUCKET 1-4; SUPPRESS; SUPPRESS TYPE; AND A FINAL PIPE
-	$F[12] =~ s/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/$2|$1/; # INSERT BRANCH VALUE AT COLUMN 13
+# DO NOT MIGRATE ITEM STATUS $eghlwz
+#	$F[3] =~ m/[\$eghlwz]/ ? do {next;} : do { 
+# DO NOT MIGRATE ITEM STATUS $eglw
+	$F[3] =~ m/[\$eglw]/ ? do {next;} : do { 
+		$F[13] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[13] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[13] =~ s/^[-\s]+$//; # CREATIONDATE
+		$F[13] = "||||".$F[13]."|||"; # INSERT 4 BLANK COLUMNS PRECEDING AND 2 BLANK COLUMNS FOLLOWING CREATIONDATE FOR CALL NUMBER BUCKET 1-4; SUPPRESS; SUPPRESS TYPE; AND A FINAL PIPE
+		$F[12] =~ s/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/$2|$1/; # INSERT BRANCH VALUE AT COLUMN 13
 # DECIDE ON CALL NUMBER VALUE FOR COLUMN 11 > 
 # ITEM CALL NUMBER CONTAINS VALUE, BIB CALL NUMBER CONTAINS VALUE OR NOTHING -> ITEM CALL NUMBER 
 # ITEM CALL NUMBER BLANK, VALUE IN BIB CALL NUMBER -> BIB CALL NUMBER
 # TO DO: FIGURE OUT WHERE PRESTAMP AND VOLUME BELONG
-	$F[10] eq "" ? $F[10]="" : do { $F[11]=$F[10]; $F[10]="";} ; # REPLACE WITH USERID [blank]
-	$F[9] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[9] =~ s/^[-\s]+$//; # EDITDATE
-	$F[6]=$F[5]+$F[6]; # CUMULATIVE CIRCULATIONS = TOT CKOUT + TOT RENEW
-	$F[5]=""; # HOLDSHISTORY [blank]
-	$F[3]=$F[3]."|"; # STATUS|STATUSDATE [blank]
-	$F[2] eq "" ? $F[2]=substr($F[1],0,9) : $F[2]=$F[2]; # BARCODE [blank] replaced by item record number with i prefix and check digit
-	$F[1]=".".$F[1]; # item record id with dot
-	$F[0]=".".$F[0]; # bibliographic record id with dot
+		$F[10] eq "" ? $F[10]="" : do { $F[11]=$F[10]; $F[10]="";} ; # REPLACE WITH USERID [blank]
+		$F[9] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[9] =~ s/^[-\s]+$//; # EDITDATE
+		$F[6]=$F[5]+$F[6]; # CUMULATIVE CIRCULATIONS = TOT CKOUT + TOT RENEW
+		$F[5]=""; # HOLDSHISTORY [blank]
+		$F[3]=$F[3]."|"; # STATUS|STATUSDATE [blank]
+		$F[2] eq "" ? $F[2]=substr($F[1],0,9) : $F[2]=$F[2]; # BARCODE [blank] replaced by item record number with i prefix and check digit
+		$F[1]=".".$F[1]; # item record id with dot
+		$F[0]=".".$F[0]; # bibliographic record id with dot
+	};
 	print join q/|/, @F[0..13]' ../data/millennium_extract-03.txt > ../data/ITEM.txt
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/ITEM.txt
