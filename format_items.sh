@@ -15,7 +15,7 @@ sort -t'|' -k 1 ../data/LOOKUP_ITEM.txt > ../data/SORTED_LOOKUP_ITEM.txt
 
 # ITEM.txt
 # TIME CONSUMED: ABOUT 3 MINUTES!
-# TODO: check each record for pipe characters, e.g., multiple barcodes, and figure out how to eliminate them!
+# TODO: check each record for pipe characters, e.g., multiple barcodes, multiple call numbers, and figure out how to eliminate them!
 perl -F'\t' -lane '
 # DO NOT MIGRATE ITEM STATUS $eghlwz
 #	$F[3] =~ m/[\$eghlwz]/ ? do {next;} : do { 
