@@ -24,6 +24,7 @@ perl -F'\t' -lane '
 		$F[13] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[13] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[13] =~ s/^[-\s]+$//; # CREATIONDATE
 		$F[13] = "||||".$F[13]."|||"; # INSERT 4 BLANK COLUMNS PRECEDING AND 2 BLANK COLUMNS FOLLOWING CREATIONDATE FOR CALL NUMBER BUCKET 1-4; SUPPRESS; SUPPRESS TYPE; AND A FINAL PIPE
 		$F[12] =~ s/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/$2|$1/; # INSERT BRANCH VALUE AT COLUMN 13
+		$F[12] =~ s/^(nashv)$/mn|$1/; # INSERT BRANCH VALUE AT COLUMN 13 FOR LOCATION=nashv
 # DECIDE ON CALL NUMBER VALUE FOR COLUMN 11 > 
 # ITEM CALL NUMBER CONTAINS VALUE, BIB CALL NUMBER CONTAINS VALUE OR NOTHING -> ITEM CALL NUMBER 
 # ITEM CALL NUMBER BLANK, VALUE IN BIB CALL NUMBER -> BIB CALL NUMBER
