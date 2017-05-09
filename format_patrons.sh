@@ -32,8 +32,14 @@ perl -F'\t' -lane '
         $F[13] eq "a" || $F[13] eq "p" ? do {$F[13]="0";} : ($F[12] ne "" ? do {$F[13]="1";} : do {$F[13]="0";});
         $F[13] ="1|$F[13]";
         $F[12] =~ s/[,|]/^/g; $F[12] =~ s/\s//g;
-        $F[11] =~ s/\|/^/g;
-        $F[10] =~ s/\|/^/g;
+	# PHONE
+#	$F[11] != "" ? $F[10] += "|$F[11]";
+        $F[11] =~ s/\|/^/g; # GRAB FIRST NON-## MILLENNIUM G/WK PHONE
+        $F[10] =~ s/\|/^/g; # GRAB FIRST NON-## MILLENNIUM HOME PHONE
+#	$F[11] =~ s/\D+//g;
+#	$F[10] =~ s/\D+//g;
+#	$F[10] == "" ? $F[10] = $F[11]
+	
         $F[10] ="|$F[10]";
         $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/;
         $F[8] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[8] =~ s/^[-\s]+$//;
@@ -44,7 +50,10 @@ perl -F'\t' -lane '
 	$F[5] = "|||"; # MAKE SECONDARY ADDRESS BLANK
         $F[4] =~ s/^([^|]+?)\|.*$/$1/; # GRAB ONLY THE TOPMOST ADDRESS
                 $F[4] =~ /^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})\b[,\s]*(\d{5}-*\d*)\s*$/
-                ? do { $F[4] =~ s/^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})\b[,\s]*(\d{5}-*\d*)\s*$/$1|$2|$3|$4/; }
+                ? do { 
+			$F[4] =~ s/^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})\b[,\s]*(\d{5}-*\d*)\s*$/$1|$2|$3|$4/; 
+			$F[4] =~ s/\$/, /g;
+		}
                 : do { $F[4] = "$F[4]|||"; } ;
 # TO DO: WORK WITH BOB ON NAME PARSING, E.G., ENSURE WE GRAB PREFERRED AND ID TRANSCRIPTION NAME
         $F[3] =~ s/^([^|]+?)\|.+?$/$1/;
@@ -137,7 +146,7 @@ perl -F'\t' -lane '
                 foreach(@f) {
 			$NOTETYPE = "";
 			# APPROVED USER
-	        	if ( $_ =~ s/^(.*)((?:APPROVED|AUTHORIZED) USER):*\s*(.*)$/APPROVED USER: $1$3/i ) {
+	        	if ( $_ =~ s/^\s*(.*?)(?:[-.:]*\s*(?:ARE|IS)*(?:APPROVED|AUTHORIZED) USERS*(?: ON THIS ACC\S+)*[-.:]*)(.*)\s*$/APPROVED USER: $1$3/i ) {
 				$_ =~ s/  +/ /g;
 				$NOTETYPE = "110";
 			}
