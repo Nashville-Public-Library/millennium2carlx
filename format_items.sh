@@ -30,7 +30,7 @@ perl -F'\t' -lane '
 # ITEM CALL NUMBER BLANK, VALUE IN BIB CALL NUMBER -> BIB CALL NUMBER
 # TO DO: FIGURE OUT WHERE PRESTAMP AND VOLUME BELONG
 		$F[11] =~ s/\|/^/g; # REPLACE PIPES WITH CARETS FOR MULTIPLE CALL NUMBERS
-		$F[10] eq "" ? $F[10]="" : do { $F[11]=$F[10]; $F[10]="";} ; # REPLACE WITH USERID [blank]
+		$F[10] eq "" ? $F[10]=$F[27] : do { $F[11]=$F[10]; $F[10]=$F[27]; } ; # REPLACE WITH USERID, which is the unintuitive column header for INTL USE $F[27] as per https://ww2.tlcdelivers.com/helpdesk/default.asp?TicketID=422395&tid=6
 		$F[9] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[9] =~ s/^[-\s]+$//; # EDITDATE
 		$F[6]=$F[5]+$F[6]; # CUMULATIVE CIRCULATIONS = TOT CKOUT + TOT RENEW
 		$F[5]=""; # HOLDSHISTORY [blank]
