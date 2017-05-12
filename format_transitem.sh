@@ -4,7 +4,7 @@
 # TRANSITEM FINES processed in format_transitem_fines.sh
 
 # TRANSITEM HOLDS
-perl -F'\t' -lane '
+perl -F'\t' -MDateTime::Format::Strptime -lane '
 	$F[25] eq "" ? do {next;} : do {
 		@H;
 	        @H = split(/\|/,$F[25]);
@@ -14,11 +14,31 @@ perl -F'\t' -lane '
 			$G[17] = "||||||" ; # DATAFLAG1|DATAFLAG3|DATAFLAG4|AMOUNTDEBITED|AMOUNTPAID|NOTES|, NOT APPROPRIATE FOR HOLDS
 			($G[16],$G[13]) = $F[12] =~ m/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/;
 			$G[15] = $F[6]; # MEDIA
-			$G[14]; # SITE
-			$G[12]; # BRANCH WHERE TRANSACTION OCCURRED, NOT APPROPRIATE FOR HOLDS
-			$G[11]; # BORROWERTYPE
-			$G[8..10]; # DUEORNOTNEEDEDAFTERDATE, RETURNDATE, LASTACTIONDATE, NOT APPROPRIATE FOR HOLDS
-			($G[7]) = @hold[2]=~m/^P=(.+)$/; $G[7] =~ s/^(\d{2})-(\d{2})-(\d{2})$/20$3-$1-$2/; # HOLD PLACED DATE
+			$G[14] = ""; # SITE
+			$G[12] = ""; # BRANCH WHERE TRANSACTION OCCURRED, NOT APPROPRIATE FOR HOLDS
+			$G[11] = ""; # BORROWERTYPE
+			$G[10] = ""; # LASTACTIONDATE, NOT APPROPRIATE FOR HOLDS
+			$G[9] = ""; # RETURNDATE, NOT APPROPRIATE FOR HOLDS
+			$G[8] = ""; # DUEORNOTNEEDEDAFTERDATE, set only for ON HOLDSHELF items below
+
+# TRANSDATE : see https://trello.com/c/E1A0lX2u
+			if ($F[3] eq "t") {
+				$parser = DateTime::Format::Strptime->new(
+					pattern         => "%b %d %Y",
+					time_zone       => "local"
+				);
+				($datePlacedInTransit,$transitOriginLogin,$transitDestination) = $F[19]=~m/(?:^|\|)(?:Sun|Mon|Tue|Wed|Thu|Fri|Sat) ((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{2} \d{4}) \d{2}:\d{2}[AP]M: IN TRANSIT from (\w+?) to (\w+?)$/;
+				if ($datePlacedInTransit ne "") {$dt = $parser->parse_datetime($datePlacedInTransit);}
+#$G[] = $transitOriginLogin; James will probably do something with this - see https://ww2.tlcdelivers.com/helpdesk/Default.asp?TicketID=422470
+#$G[] = $transitDestination; James will probably do something with this - see https://ww2.tlcdelivers.com/helpdesk/Default.asp?TicketID=422470
+				$G[7] = $dt->strftime("%Y-%m-%d");
+			} elsif ($F[3] eq "!") {
+				$G[7] = "2017-07-05"; # DATE PLACED ON HOLDSHELF, ASSUME 2017-07-05
+				$G[8] = "2017-07-14"; # DATE PLACED ON HOLDSHELF, ASSUME 2017-07-14
+			} else {
+				($G[7]) = @hold[2]=~m/^P=(.+)$/; $G[7] =~ s/^(\d{2})-(\d{2})-(\d{2})$/20$3-$1-$2/; # HOLD PLACED DATE
+			}
+
 			($G[6]) = @hold[8]=~m/^PU=(.+)$/; # PICKUP
 			$G[5]; # RENEW, NOT APPROPRIATE FOR HOLDS
 			$G[4]; # PATRON BARCODE; INSERTED IN join BELOW
@@ -34,10 +54,10 @@ perl -F'\t' -lane '
 			$checksum = $sum % 11;
 			if ($checksum == 10) { $checksum = "x"; }
 			$G[3] = ".p" . $G[3] . $checksum;
-			$F[3] eq "-" ? $G[2] = "R*" : # TRANSCODE - ITEM LEVEL HOLD
-			$F[3] eq "t" ? $G[2] = "IH" : # TRANSCODE - IN TRANSIT HOLD
-			$F[3] eq "!" ? $G[2] = "H" : # TRANSCODE - HOLD SHELF
 			$G[2] = $F[3]; # TRANSCODE = MILLENNIUM ITEM STATUS [probaby f]
+			if ($F[3] eq "-") {$G[2] = "R*";} # TRANSCODE - ITEM LEVEL HOLD
+			if ($F[3] eq "t") {$G[2] = "IH";} # TRANSCODE - IN TRANSIT HOLD
+			if ($F[3] eq "!") {$G[2] = "H";} # TRANSCODE - HOLD SHELF
 			$F[2] eq "" ? $G[1]=substr($F[1],1,9) : $G[1]=$F[2]; # BARCODE [blank] replaced by item record number with i prefix and check digit
 			$G[0]=".".$F[1]; # item record id with dot
 			print join q/|/, @G;
