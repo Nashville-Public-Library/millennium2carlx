@@ -146,10 +146,11 @@ perl -F'\t' -lane '
                 foreach(@f) {
 			$NOTETYPE = "";
 			# APPROVED USER
-	        	if ( $_ =~ s/^\s*(.*?)(?:[-.:]*\s*(?:ARE|IS)*(?:APPROVED|AUTHORIZED) USERS*(?: ON THIS ACC\S+)*[-.:]*)(.*)\s*$/APPROVED USER: $1$3/i ) {
+	        	if ( $_ =~ s/^\s*\"*(.*?)\"*(?:[-.:]*\s*(?:ARE|IS|AN)*\s*(?:APPROV(?:AL|E|ED|ER)|AUTHORIZED)\s+USE(?:D|R)*S*(?: ON THIS ACC\S+)*[-.:]*)(.*)\s*$/APPROVED USER: $1$2/i ) {
 				$_ =~ s/  +/ /g;
 				$NOTETYPE = "110";
 			}
+# TO DO: determine whether a single date is USER DOB or staffer note entry. Right way? only accept a date more recent than the created date
                         if ( $_ =~ m/^(.*)\b((\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4}))(.*)?$/ ) {
                                 if (length($3) == 1) { $notem = "0".$3; } elsif (length($3) == 2) { $notem = $3; }
                                 if (length($4) == 1) { $noted = "0".$4; } elsif (length($4) == 2) { $noted = $4; }
