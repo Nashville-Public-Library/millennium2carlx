@@ -32,15 +32,26 @@ perl -F'\t' -lane '
         $F[13] eq "a" || $F[13] eq "p" ? do {$F[13]="0";} : ($F[12] ne "" ? do {$F[13]="1";} : do {$F[13]="0";});
         $F[13] ="1|$F[13]";
         $F[12] =~ s/[,|]/^/g; $F[12] =~ s/\s//g;
-	# PHONE
-#	$F[11] != "" ? $F[10] += "|$F[11]";
-        $F[11] =~ s/\|/^/g; # GRAB FIRST NON-## MILLENNIUM G/WK PHONE
-        $F[10] =~ s/\|/^/g; # GRAB FIRST NON-## MILLENNIUM HOME PHONE
-#	$F[11] =~ s/\D+//g;
-#	$F[10] =~ s/\D+//g;
-#	$F[10] == "" ? $F[10] = $F[11]
-	
-        $F[10] ="|$F[10]";
+# PHONE
+	$allPhone = "$F[10]|$F[11]"; 
+	$allPhone =~ s/^\|+//g;
+	$allPhone =~ s/\|+$//g;
+	$allPhone =~ s/(?:^|\|)#+[^|]*?(?:\||$)//g; # Remove all ## Millennium phone numbers
+	$allPhone =~ s/[^\d|]//g;
+	@phones = split(/\|/, $allPhone); 
+	if (length @phones[0] == 10) {
+		@phones[0] =~ s/^(\d{3})(\d{3})(\d{4})$/$1-$2-$3/;
+		$F[10] = @phones[0];
+	} else {
+		$F[10] = "";
+	}
+	if (length @phones[1] == 10) {
+		@phones[1] =~ s/^(\d{3})(\d{3})(\d{4})$/$1-$2-$3/;
+		$F[11] = @phones[1];
+	} else {
+		$F[11] = "";
+	}
+	$F[10] = "|$F[10]";
         $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/;
         $F[8] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[8] =~ s/^[-\s]+$//;
         $F[7] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[7] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[7] =~ s/^[-\s]+$//;
