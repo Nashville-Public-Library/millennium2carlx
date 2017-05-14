@@ -33,7 +33,7 @@ perl -F'\t' -lane '
 	}
 print join q/|/, @F;' ../data/holds.txt > ../data/TITLE_LEVEL_HOLDS.txt
 
-rm -f ../data/holds.txt
-rm -f ../data/holds.dump
+#rm -f ../data/holds.txt
+#rm -f ../data/holds.dump
 
 
