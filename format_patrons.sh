@@ -21,16 +21,18 @@ sort -t'|' -k 1 ../data/LOOKUP_PATRON.txt > ../data/SORTED_LOOKUP_PATRON.txt
 
 # PATRON.txt
 perl -F'\t' -lane '
-# exclude MNPS patrons
-#$F[1] eq "19" || $F[1] eq "30" || $F[1] eq "33" || $F[1] eq "35" ? do {next;} : do {
 # 20170306 MILLENNIUM GUARDIAN/GUARANTOR INFORMATION MOVED CARL.X TARGET FIELD FROM SPONSOR TO PATRON NOTE
 #        $F[18] =~ s/\|/^/g; $F[18] .= "|"; # SPONSOR AND FINAL PIPE
 	$F[18] = "|"; # SPONSOR [BLANK] AND FINAL PIPE
+# COLLECTIONSTATUS
         $F[2] eq "c" ? do {$COLLECTIONSTATUS = "2";} : ($F[1] =~ /^(0|2|3|4|5|6|12|15|30)$/ ? do {$COLLECTIONSTATUS = "1";} : do {$COLLECTIONSTATUS = "78"});
         $F[17] = "$COLLECTIONSTATUS|$F[17]";
+#
         $F[14] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[14] =~ s/^[-\s]+$//;
+#
         $F[13] eq "a" || $F[13] eq "p" ? do {$F[13]="0";} : ($F[12] ne "" ? do {$F[13]="1";} : do {$F[13]="0";});
         $F[13] ="1|$F[13]";
+#
         $F[12] =~ s/[,|]/^/g; $F[12] =~ s/\s//g;
 # PHONE
 	$allPhone = "$F[10]|$F[11]"; 
@@ -64,10 +66,15 @@ perl -F'\t' -lane '
 		$F[11] = "";
 	}
 	$F[10] = "|$F[10]";
+# EDITDATE
         $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/;
+# ACTDATE
         $F[8] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[8] =~ s/^[-\s]+$//;
+# EXPDATE
         $F[7] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[7] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[7] =~ s/^[-\s]+$//;
+# REGDATE
         $F[6] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[6] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/;
+# ADDRESSES
         $F[5] =~ s/^([^|]+?)\|.*$/$1/; # GRAB ONLY THE TOPMOST G/ML ADDR
 	$F[4] eq "" && $F[5] ne "" ? $F[4] = $F[5] : do {}; # IF ADDRESS IS EMPTY GRAB G/ML ADDR
 	$F[5] = "|||"; # MAKE SECONDARY ADDRESS BLANK
@@ -78,29 +85,35 @@ perl -F'\t' -lane '
 			$F[4] =~ s/\$/, /g;
 		}
                 : do { $F[4] = "$F[4]|||"; } ;
+# PATRON NAME
 # TO DO: WORK WITH BOB ON NAME PARSING, E.G., ENSURE WE GRAB PREFERRED AND ID TRANSCRIPTION NAME
-        $F[3] =~ s/^([^|]+?)\|.+?$/$1/;
-                $F[1] eq "4" || $F[1] eq "8"
-                ? do { $F[3] = "||$F[3]|"; }
-                : do {
-                      	$last="";$penultimate="";$first="";$middle="";$suffix="";
-                        # capture suffixes, excepting I, V, X which are likely to be initials
-                        $F[3] =~ s/\s*\b(1ST|2ND|3RD|4TH|5TH|6TH|7TH|8TH|9TH|II|III|IV|JR|SR|VI|VII|VIII|IX)\b\.*//i
-                                ? do { $suffix = $1 ; }
-                                : do { $suffix = "" ; } ;
-                        $F[3] =~ m/^([^,]+?),\s*(.+?)$/
-                                ? do {
-                                      	$last = $1;
-                                        $penultimate = $2;
-                                        $penultimate =~ /^(\S+?)\s+?(\S+?)$/
-                                                ? do { $first = $1 ; $middle = $2 ; }
-                                                : do { $first = $penultimate ; } ;
-                                }
-                                : do { $last = $F[3]; $first = ""; $middle = "" } ;
-                        $F[3] = "$last|$first|$middle|$suffix";
-                };
-        $F[3] = "N|$F[3]";
-# keep patron record id #	$F[0] =~ s/^p(\d{7})[\dx]$/$1/; # P NUMBER -> patron_num, e.g., p10000008 -> 1000000
+	$topName = $F[3];
+        $topName =~ s/^([^|]+?)\|.+?$/$1/; # GRABS ONLY THE TOPMOST PATRON NAME
+	$topName =~ s/^#+//; # ELIMINATE leading octothorpes # from name
+	$topName =~ s/\s\s+/\s/g; 
+#	$F[1] eq "4" || $F[1] eq "8" # EXCLUDE INSTITUTIONS AND ILL LIBRARIES FROM NAME PARSING
+	$F[1] eq "8" # ILL LIBRARIES NAME PARSING
+		? do { $topName = "$topName|||"; }
+		: do {
+			$last="";$penultimate="";$first="";$middle="";$suffix="";
+			# capture suffixes, excepting I, V, X which are likely to be initials
+			$topName =~ s/\s*\b(1ST|2ND|3RD|4TH|5TH|6TH|7TH|8TH|9TH|II|III|IV|JR|SR|VI|VII|VIII|IX)\b\.*//i
+				? do { $suffix = $1 ; }
+				: do { $suffix = "" ; } ;
+			$topName =~ m/^([^,]+?),\s*(.+?)$/
+				? do {
+					$last = $1;
+					$penultimate = $2;
+					$penultimate =~ /^(\S+?)\s+?(\S+?)$/
+						? do { $first = $1 ; $middle = $2 ; }
+						: do { $first = $penultimate ; } ;
+				}
+				: do { $last = $topName; $first = ""; $middle = "" } ;
+			if ($F[3] =~ m/(^|\|)#+/ ) { $last = "##" . $last; }
+			$topName = "$last|$first|$middle|$suffix";
+		};
+	$F[3] = "N|$topName";
+# PATRONBARCODE
         $F[15] !~ /\|/ ? do { $F[15] = $F[15] ; }
                 : do { $F[15] =~ m/^(?:.+\|)*(190\d{6})(?:\||$)(?:.+?)*$/ ? do { $F[15] =~ s/^(?:.+\|)*(190\d{6})(?:\||$)(?:.+?)*$/$1/;} # PICK THE LAST 190\d{6} BARCODE
                         : do { $F[15] =~ m/^(?:.+\|)*(\d{6})(?:\||$)(?:.+?)*$/ ? do { $F[15] =~ s/^(?:.+\|)*(\d{6})(?:\||$)(?:.+?)*$/$1/;} # PICK THE LAST \d{6} BARCODE
@@ -112,8 +125,7 @@ perl -F'\t' -lane '
         $F[0] .= "|$F[15]"; # ADD PATRON BARCODE COLUMN
 	$F[0]=".".$F[0]; # patron record id with dot
         $F[15] = ""; # REMOVE PATRON BARCODE VALUE FROM ALTID
-# close exclude MNPS patrons: brace semicolon
-#
+
         print join q/|/, @F[0..18];' ../data/millennium_extract-05.txt > ../data/PATRON.txt
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON.txt
