@@ -34,7 +34,7 @@ expect "Enter password:"
 send "$mysqlUserPassword\r"
 expect -re $prompt
 # TO DO: braces, double quotes and expect tcl variables... $localPath does not work below, so I use ../data/ instead
-send {mysql -u root -p -e 'SELECT patron.patronNum AS PATRONID, patron.optIn AS READINGHISTORYOPTIN FROM patron WHERE patron.optIn=1 ORDER BY patron.patronNum;' pfile > ../data/patron_reading_history_opt_in.txt }
+send {mysql -u root -p -e 'SELECT patron.patronNum AS PATRONID, "Y" AS READINGHISTORYOPTIN FROM patron WHERE patron.optIn=1 ORDER BY patron.patronNum;' pfile > ../data/patron_reading_history_opt_in.txt }
 send "\r"
 expect "Enter password:"
 send "$mysqlUserPassword\r"

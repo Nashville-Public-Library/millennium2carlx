@@ -20,7 +20,7 @@ perl -F'\t' -lane '
                 if ($checksum == 10) { $checksum = "x"; }
                 $F[0] = ".p" . $F[0] . $checksum;
 	}
-print join q/|/, @F;' ../data/patron_reading_history_opt_in.txt > ../data/PATRON_READING_HISTORY_OPT_IN.txt
+print join q/|/, @F;' ../data/patron_reading_history_opt_in.txt > ../data/LOOKUP_PATRON_READING_HISTORY_OPT_IN.txt
 
 rm -f ../data/patron_reading_history_opt_in.txt
 rm -f ../data/patron_reading_history_opt_in.dump
