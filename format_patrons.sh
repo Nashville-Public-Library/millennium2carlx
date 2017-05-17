@@ -41,14 +41,12 @@ perl -F'\t' -lane '
 	$allPhone =~ s/(?:^|\|)#+[^|]*?(?:\||$)//g; # Remove all ## Millennium phone numbers
 	$allPhone =~ s/[^\d|]//g;
 	@phones = split(/\|/, $allPhone); 
+	@phones = grep { length($_) == 7 || length($_) == 10 } @phones;
 	if (length @phones[0] == 7) {
 		@phones[0] = "615@phones[0]";
 	}
 	if (length @phones[0] == 10) {
 		@phones[0] =~ s/^(\d{3})(\d{3})(\d{4})$/$1-$2-$3/;
-		$F[10] = @phones[0];
-	} elsif (length @phones[0] > 10) {
-		@phones[0] =~ s/^(\d{3})(\d{3})(\d{4})(\d+)$/$1-$2-$3 EXT $4/;
 		$F[10] = @phones[0];
 	} else {
 		$F[10] = "";
@@ -58,9 +56,6 @@ perl -F'\t' -lane '
 	}
 	if (length @phones[1] == 10) {
 		@phones[1] =~ s/^(\d{3})(\d{3})(\d{4})$/$1-$2-$3/;
-		$F[11] = @phones[1];
-	} elsif (length @phones[1] > 10) {
-		@phones[1] =~ s/^(\d{3})(\d{3})(\d{4})(\d+)$/$1-$2-$3 EXT $4/;
 		$F[11] = @phones[1];
 	} else {
 		$F[11] = "";
