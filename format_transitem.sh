@@ -54,10 +54,10 @@ perl -F'\t' -MDateTime::Format::Strptime -lane '
 			$checksum = $sum % 11;
 			if ($checksum == 10) { $checksum = "x"; }
 			$G[3] = ".p" . $G[3] . $checksum;
-			$G[2] = $F[3]; # TRANSCODE = MILLENNIUM ITEM STATUS [probaby f]
-			if ($F[3] eq "-") {$G[2] = "R*";} # TRANSCODE - ITEM LEVEL HOLD
-			if ($F[3] eq "t") {$G[2] = "IH";} # TRANSCODE - IN TRANSIT HOLD
-			if ($F[3] eq "!") {$G[2] = "H";} # TRANSCODE - HOLD SHELF
+			$G[2] = $F[3]; # TRANSCODE = MILLENNIUM ITEM STATUS
+#			if ($F[3] eq "-") {$G[2] = "R*";} # TRANSCODE - ITEM LEVEL HOLD
+#			if ($F[3] eq "t") {$G[2] = "IH";} # TRANSCODE - IN TRANSIT HOLD
+#			if ($F[3] eq "!") {$G[2] = "H";} # TRANSCODE - HOLD SHELF
 			$F[2] eq "" ? $G[1]=substr($F[1],1,9) : $G[1]=$F[2]; # BARCODE [blank] replaced by item record number with i prefix and check digit
 			$G[0]=".".$F[1]; # item record id with dot
 			print join q/|/, @G;
