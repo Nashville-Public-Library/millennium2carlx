@@ -25,7 +25,9 @@ echo "PATRON records: $PR"
 PNR=`wc -l ../data/PATRON_NOTE.txt | awk '{print $1}'`
 echo "PATRON_NOTE records: $PNR"
 PRHR=`wc -l ../data/LOOKUP_PATRON_READING_HISTORY_OPT_IN.txt | awk '{print $1}'`
-echo "PATRON_READING_HISTORY_OPT_IN records: $PRHR"
+echo "LOOKUP_PATRON_READING_HISTORY_OPT_IN records: $PRHR"
+PRHR2=`awk -F'|' '$22 ~ /Y/ { print $22 }' ../data/PATRON.txt | wc -l`
+echo "PATRON USERID = Y records: $PRHR2"
 
 echo "*** PINS ***"
 cd john-1.8.0/run/
