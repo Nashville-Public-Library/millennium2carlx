@@ -89,9 +89,18 @@ perl -F'\t' -lane '
         $topName =~ s/^([^|]+?)\|.+?$/$1/; # GRABS ONLY THE TOPMOST PATRON NAME
 	$topName =~ s/^#+//; # ELIMINATE leading octothorpes # from name
 	$topName =~ s/\s\s+/\s/g; 
-#	$F[1] eq "4" || $F[1] eq "8" # EXCLUDE INSTITUTIONS AND ILL LIBRARIES FROM NAME PARSING
-	$F[1] eq "8" # ILL LIBRARIES NAME PARSING
-		? do { $topName = "$topName|||"; }
+# ILL LIBRARIES NAME PARSING
+	$F[1] eq "8" 
+		? do { 
+			@names; @symbols; $last=""; $first=""; $middle=""; $suffix="";
+			@names = split(/\|/, $F[3]);
+			@symbols = grep { length($_) < 6 } @names;
+			@names = grep { length($_) > 5 } @names;
+			$last = @names[0]; # INSTITUTION NAME
+			$first = join q/ /, @symbols; # OCLC AND AGENT ILL SYMBOLS
+			$topName = "$last|$first||";
+		}
+# NON-ILL NAME PARSING
 		: do {
 			$last="";$penultimate="";$first="";$middle="";$suffix="";
 			# capture suffixes, excepting I, V, X which are likely to be initials
