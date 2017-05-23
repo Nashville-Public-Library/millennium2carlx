@@ -152,7 +152,11 @@ perl -F'\t' -lane '
 		$F[0]=".".$F[0]; # patron record id with dot
                 @f = split(/\|/,$F[18]);
                 foreach(@f) {
-                        $_ = "|600||$_";
+			if ($_ =~ m/^MNPS Guarantor/) {
+	                        $_ = "|601||$_"; # assign MNPS Guarantor NOTETYPE 601
+			} else {
+	                        $_ = "|600||$_";
+			}
                         $_ = $F[0].$_."|";
                         print $_;
                 };
@@ -168,6 +172,11 @@ perl -F'\t' -lane '
 		$F[0]=".".$F[0]; # patron record id with dot
                 @f = split(/\|/,$F[19]);
                 foreach(@f) {
+# PATRON NOTE MESSAGE: ELIMINATE ONLINE BARCODE CONVERTED TO NOTE
+			if ( $_ =~ m/^\d{7}$/ ) { next; }
+# PATRON NOTE MESSAGE: ELIMINATE MILLENNIUM PATRON ONLINE SELF REGISTRATION STAFF DIRECTIONS
+			if ( $_ =~ m/^(1\. ELECTRONIC|2\. IF PATRON|3\. IF DUPLICATE|4\. REQUEST|5\. IF PATRON|6\. |7\.|8\. CHANGE|9\. ADD|10\. DO NOT|10\. DELETE|11\. DELETE).*$/) { next; };
+
                         if ( $_ =~ m/^(.*)\b((\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4}))(.*)$/ ) {
                                 if (length($3) == 1) { $notem = "0".$3; } elsif (length($3) == 2) { $notem = $3; }
                                 if (length($4) == 1) { $noted = "0".$4; } elsif (length($4) == 2) { $noted = $4; }
