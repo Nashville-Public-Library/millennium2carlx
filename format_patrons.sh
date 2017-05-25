@@ -214,7 +214,7 @@ perl -F'\t' -lane '
 				$NOTETYPE = "110";
 			}
 # ELIMINATE PHONE NUMBER NOTES
-			if ( $_ =~ m/^(business phone: )?(\d{3}-)?\d{3}-\d{4}.*$/i ) { next; };
+			if ( $_ =~ m/^\s*#*(business phone: )?(\d{3}-)?\d{3}-\d{4}.*$/i ) { next; };
 			if ( $_ =~ m/^\s*(EXT|WK|WORK)\:? (PHONE|EXT|#)?.*$/i ) { next; };
 # TIMESTAMP
                         if ( $_ =~ m/^(.*)\b((\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4}))(.*)?$/ ) {
