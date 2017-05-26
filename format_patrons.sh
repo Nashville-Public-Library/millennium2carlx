@@ -77,12 +77,20 @@ perl -F'\t' -lane '
 	$F[4] eq "" && $F[5] ne "" ? $F[4] = $F[5] : do {}; # IF ADDRESS IS EMPTY GRAB G/ML ADDR
 	$F[5] = "|||"; # MAKE SECONDARY ADDRESS BLANK
         $F[4] =~ s/^(\$,\|)*([^|]+?)(\|.*)*$/$2/; # GRAB ONLY THE TOPMOST ADDRESS
-	$F[4] =~ /^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})\b[,\s]*(\d{5}-*\d*)\s*$/
-		? do { 
-			$F[4] =~ s/^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})\b[,\s]*(\d{5}-*\d*)\s*$/$1|$2|$3|$4/; 
-			$F[4] =~ s/\$/, /g;
-		}
-		: do { $F[4] = "$F[4]|||"; } ;
+	if ($F[4] =~ /^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})[,\s]*(\d{5}-*\d*)[\$\s]*$/) {
+		$F[4] =~ s/^(.*)\$(.+?)[,\s]*\b([A-Za-z]{2})[,\s]*(\d{5}-*\d*)[\$\s]*$/$1|$2|$3|$4/; 
+		$F[4] =~ s/\$/, /g;
+	} elsif ($F[4] =~ /^(.*)\$\s*(ANTIOCH|GOODLETTSVILLE|NASHVILLET?N?|OLD HICKORY|WHITES CREEK)[,\s]*[,\s]*(\d{5}-*\d*)[\$\s]*$/) {
+		$F[4] =~ s/^(.*)\$\s*(ANTIOCH|GOODLETTSVILLE|NASHVILLET?N?|OLD HICKORY|WHITES CREEK)[,\s]*(\d{5}-*\d*)[\$\s]*$/$1|$2|TN|$3/i;
+		$F[4] =~ s/\$/, /g;
+	} elsif ($F[4] =~ /(.+?)[,\s]*\b([A-Za-z]{2})[,\s]*(\d{5}-*\d*)[\$\s]*$/) {
+# ILL PATRON ADDRESS
+		$F[4] =~ s/(.+?)[,\s]*\b([A-Za-z]{2})[,\s]*(\d{5}-*\d*)[\$\s]*$/|$2|$3|$4/;
+	} elsif ($F[4] =~ /\s*\$,\s*/) {
+		$F[4] = "|||"; 
+	} else {
+		$F[4] = "$F[4]|||"; 
+	} 
 # PATRON NAME
 # TO DO: WORK WITH BOB ON NAME PARSING, E.G., ENSURE WE GRAB PREFERRED AND ID TRANSCRIPTION NAME
 	$topName = $F[3];
