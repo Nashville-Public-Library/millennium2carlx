@@ -202,6 +202,8 @@ perl -F'\t' -lane '
                         }
                         $_ = $F[0].$_."|";
                         print $_;
+# PATRON NOTE MESSAGE: ELIMINATE WAIVE NOTES - MOSTLY BAD PATRON BEHAVIOR
+			if ( toupper($_) =~ m/(FOOD FOR FINES|TEEN READ|WAIVE|WAVIE)/ ) { next; };
                 };
         };
 	' ../data/millennium_extract-05.txt > ../data/PATRON_NOTE_MESSAGE.txt
@@ -224,6 +226,8 @@ perl -F'\t' -lane '
 # ELIMINATE PHONE NUMBER NOTES
 			if ( $_ =~ m/^\s*#*(business phone: )?(\d{3}-)?\d{3}-\d{4}.*$/i ) { next; };
 			if ( $_ =~ m/^\s*(EXT|WK|WORK)\:? (PHONE|EXT|#)?.*$/i ) { next; };
+# PATRON NOTE NOTE: ELIMINATE WAIVE NOTES - MOSTLY BAD PATRON BEHAVIOR
+			if ( toupper($_) =~ m/(FOOD FOR FINES|TEEN READ|WAIVE|WAVIE)/ ) { next; };
 # TIMESTAMP
                         if ( $_ =~ m/^(.*)\b((\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4}))(.*)?$/ ) {
                                 if (length($3) == 1) { $notem = "0".$3; } elsif (length($3) == 2) { $notem = $3; }
