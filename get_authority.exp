@@ -77,14 +77,17 @@ close
 set timeout $wait
 
 logWrite $logFile "COMPLETE get_authority"
+
+# SLEEP WHILE FILE WRITES
+sleep 10
+
 logWrite $logFile "START format_authority"
 set prompt {\$ $}
 spawn bash
 expect -re $prompt
-send "php MILLENNIUM_EXTRACT.php\r"
+send "php format_authority.php\r"
 set timeout -1
 expect -re $prompt
 close
 set timeout $wait
 logWrite $logFile "COMPLETE format_authority"
-
