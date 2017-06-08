@@ -1,0 +1,67 @@
+#!/usr/bin/expect
+
+# get_infinitecampus.exp
+# James Staub
+# Nashville Public Library
+
+exp_internal 0 ; # 1 = verbose debugging to stdout
+log_user 1 ; # 1 = send screens to stdout
+
+# READ CONFIG.PWD.INI
+source read_config.exp
+
+# SET UP LOG
+# TO WRITE TO THE LOG:
+# logWrite $logFile "log entry"
+source log.exp
+set logFile "$localPath$name.log"
+logWrite $logFile "START get_infinitecampus"
+
+# RETRIEVE INFINITE CAMPUS ZIP PACKAGE
+spawn scp $icUser:data/CARLX_INFINITECAMPUS.zip $localPath
+set timeout -1
+expect "password"
+send "$icPassword\r"
+expect "100%*\n"
+close
+set timeout $wait
+
+logWrite $logFile "COMPLETE get_infinitecampus"
+
+# SLEEP WHILE FILE WRITES
+sleep 1
+
+logWrite $logFile "START format_infinitecampus"
+set prompt {\$ $}
+spawn bash
+expect -re $prompt
+
+# UNZIP INFINITE CAMPUS PACKAGE
+send "7za x -o"
+send $localPath
+send " "
+send $localPath
+send "CARLX_INFINITECAMPUS.zip"
+send "\r"
+expect "Would you like to replace the existing file*uit?"
+send "y\r"
+expect "Enter password \(will not be echoed\): "
+send "$icPassword\r"
+expect "Would you like to replace the existing file*uit?"
+send "y\r"
+set timeout -1
+expect -re $prompt
+send "chmod 700 ../data/CARLX_INFINITECAMPUS*\r"
+expect -re $prompt
+
+# FORMAT INFINITE CAMPUS FILES
+send "bash format_infinitecampus.sh\r"
+set timeout -1
+expect -re $prompt
+send "chmod 700 ../data/INFINITECAMPUS*\r"
+expect -re $prompt
+
+close
+set timeout $wait
+logWrite $logFile "COMPLETE format_infinitecampus"
+
