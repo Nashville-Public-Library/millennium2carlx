@@ -82,7 +82,8 @@ set prompt {\$ $}
 spawn bash
 expect -re $prompt
 # Sparky aliases cp -> cp -i[nteractive]. "command cp" circumvents the alias
-send "command cp ../data/$name-07.mrc ../data/BIBLIOGRAPHIC.mrc\r"
+#send "command cp ../data/$name-07.mrc ../data/BIBLIOGRAPHIC.mrc\r"
+send "php format_bibliographic.php\r"
 set timeout -1
 expect -re $prompt
 close
