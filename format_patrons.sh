@@ -175,6 +175,15 @@ perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON_NOTE_GUARANTOR.txt
 
 # ELIMINATE MNPS GUARANTOR RECORDS WHERE PATRON HAS NO ENTRIES IN TRANSITEM_CHECKOUT OR TRANSITEM_FINES
 # TIMING COULD BE PROBLEMATIC - TRANSITEM_FINES NEEDS TO BE COMPLETE
+# DETERMINE WHETHER FINES EXTRACT IS RUNNING
+while pgrep -f 'bash fines.sh' | wc -l >/dev/null
+do
+  	BFINES=$(pgrep -f 'bash fines.sh' | wc -l)
+        if [[ $BFINES = 0 ]] : then
+                break
+        fi
+        sleep 30
+done
 sort ../data/PATRON_NOTE_GUARANTOR.txt > ../data/PATRON_NOTE_GUARANTOR_SORTED.txt
 awk -F'|' '$4 in a != 1 { a[$4]; print $4 }' ../data/TRANSITEM_CHECKOUT.txt ../data/TRANSITEM_FINES.txt \
 | sort | awk -F'|' 'FNR==NR && NF { a[$1]; next } ($2 == 601 && ( $1 in a )) || $2 == 600 { print $0 }' - ../data/PATRON_NOTE_GUARANTOR_SORTED.txt \
