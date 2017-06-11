@@ -65,5 +65,5 @@ echo "*** INFINITECAMPUS ***"
 IC1R=`wc -l < ../data/INFINITECAMPUS_STUDENT.txt`
 echo "INFINITECAMPUS STUDENT records: $IC1R"
 IC2R=`wc -l < ../data/INFINITECAMPUS_STAFF.txt`
-echo "INFINITECAMPUS STUDENT records: $IC2R"
+echo "INFINITECAMPUS STAFF records: $IC2R"
 
