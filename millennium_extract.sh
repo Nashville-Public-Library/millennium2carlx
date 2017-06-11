@@ -6,13 +6,11 @@
 # MILLENNIUM->CARL.X MIGRATION DATA EXTRACTION
 # Millennium 2014 2.0.0_15
 
-echo "fix get_patrons_with_fines.exp\n"
-echo "fix get_patrons.exp\n"
-echo "fix get_bibliographic.exp - the format isn't launching?\n"
-#exit
-
 # DELETE FILES FROM SOLARIS LEST OLD FILES GET APPENDED
 expect cleanup.exp
+
+# GET INFINITE CAMPUS
+expect get_infinitecampus.exp &
 
 # GET AUTHORITY FILE
 expect get_authority.exp &
@@ -31,7 +29,7 @@ expect get_patron_reading_history_opt_in.exp &
 
 # GET PINS (NOT BACKGROUND INITIALLY!)
 expect get_pins.exp
-./format_pin.sh &
+bash format_pin.sh &
 
 # GET ITEMS (NOT BACKGROUND!)
 expect get_items.exp
@@ -39,7 +37,20 @@ expect get_items.exp
 # GET PATRONS (NOT BACKGROUND!)
 expect get_patrons.exp
 
+# ENSURE RELEVANT PROCESSES HAVE COMPLETED
+
+# DETERMINE WHETHER FINES EXTRACT IS RUNNING
+while pgrep -f 'bash fines.sh' | wc -l >/dev/null
+do
+	BFINES=$(pgrep -f 'bash fines.sh' | wc -l)
+	if [[ $BFINES = 0 ]] : then
+		break
+	fi
+	sleep 30
+done
+
 # MONITOR BACKGROUND EXPECT GET_*.EXP PROCESSES. BIBLIOGRAPHIC SHOULD BE THE LAST TO FINISH
+# ALL SHOULD FINISH LONG BEFORE FINES BUT FORMAT_PATRONS.SH WILL WAIT ON FINES TO COMPLETE
 while pgrep -f 'expect get_' | wc -l >/dev/null
 do
         PROCS=$(pgrep -f 'expect get_' | wc -l)
@@ -52,6 +63,12 @@ done
 
 # DELETE FILES FROM SOLARIS 
 expect cleanup.exp
+
+# SET ALL DATA FILES TO CHMOD 700
+chmod 700 ../data/*
+
+# REPORT
+bash report.sh >> ../data/millennium_extract.log
 
 # COMPRESS FILES SHOULD WAIT UNTIL fines.sh IS COMPLETE
 # bash 7z.sh
