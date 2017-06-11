@@ -22,8 +22,8 @@ perl -F'\|' -lane '
 # DAMAGE STATEMENT
 	$F[4] =~ s/^.*(binding .*loose|damage|highlighting|pages? (falling|loose)|stain|t(ee|oo)th marks|tear|torn|underlining|writing).*$/G:DAMAGE STATEMENT/i;
 
-# REQUEST FOR STAFF EVALUATION/REPAIR/ACTION
-	$F[4] =~ s/^.*last patron (report|sa(ys|id)).*$/G:REQUEST STAFF ACTION/i;
+# REQUEST FOR STAFF EVALUATION/REPAIR/ACTION/NEEDS LABEL
+	$F[4] =~ s/^.*(last patron (report|sa(ys|id))|needs.*label).*$/G:REQUEST STAFF ACTION/i;
 
 # REPAIRED
 	$F[4] =~ s/^.*repaired.*$/G:REPAIRED/i;
@@ -32,9 +32,6 @@ perl -F'\|' -lane '
 
 # REPLACED BARCODE
 	$F[4] =~ s/^35192\d{9}.*$/G:REPLACED ITEM BARCODE/i;
-
-# NEEDS LABEL
-	$F[4] =~ s/^.*needs.*label.*$/G:NEEDS LABEL/i;
 
 # MISSING PARTS STATEMENT
 	$F[4] =~ s/^((contains?|include[ds]?)|(\d+?|one|two|three|four|five|six|seven|eight|nine|ten)) .*(books?|cd(-rom)?s?|dis[ck]s?|dvds?|guides?|kindle|maps?|nook|playaways?|sony reader|sound recordings|teacher.?s guide).*missing.*$/G:MISSING PARTS STATEMENT/i;

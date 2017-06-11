@@ -1,5 +1,7 @@
 perl -F'\|' -lane '
 
+	if ($F[1] ne "") {next;}
+
 # APPROVED USER
 	$F[3] =~ s/^.*(APPROVED|AUTHORIZED) USER.*$/G:APPROVED USER/i;
 
