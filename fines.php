@@ -14,6 +14,8 @@
 
 $thread = $argv[1];
 
+date_default_timezone_set('America/Chicago');
+
 // Transform 7 digit record number to Millennium record number with check digit
 // Check digit calculation as per IGR #105781
 // http://csdirect.iii.com/manual_2009b/rmil_records_numbers.html
