@@ -1,3 +1,5 @@
+#!/usr/bin/php -ddisplay_errors=E_ALL
+
 <?php
 require 'File/MARC.php';
 

@@ -1,3 +1,5 @@
+#!/usr/bin/php -ddisplay_errors=E_ALL
+
 <?php
 // format_bibliographic.php
 // James Staub

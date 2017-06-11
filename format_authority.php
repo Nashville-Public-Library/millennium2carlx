@@ -1,3 +1,5 @@
+#!/usr/bin/php -ddisplay_errors=E_ALL
+
 <?php
 // format_authority.php
 // James Staub
@@ -5,7 +7,6 @@
 // Update MARC records exported from Millennium
 // to meet CARL.X import requirements
 
-// TO DO: AUTHORITY.mrc is not writing!
 // 20170119 :
 //	changed script name and location	 
 //	changed paths to data files
