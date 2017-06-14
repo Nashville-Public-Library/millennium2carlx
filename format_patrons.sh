@@ -179,7 +179,7 @@ perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON_NOTE_GUARANTOR.txt
 while pgrep -f 'bash fines.sh' | wc -l >/dev/null
 do
   	BFINES=$(pgrep -f 'bash fines.sh' | wc -l)
-        if [[ $BFINES = 0 ]] : then
+        if [[ $BFINES = 0 ]] ; then
                 break
         fi
         sleep 30
