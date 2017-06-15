@@ -129,11 +129,13 @@ foreach ($patronIds as $id) {
 		// Manual fines will not include $1 (assumed to be Lost Card fee) charges
 		// Manual fines will not include $8 (assumed to be replacement piece) charges
 		// Manual fines will not include $16 (assumed to be 2 x replacement piece) charges
+		// Manual fines will not include $10 collection agency fees
 		// Manual fines will not include test or training charges
 	   if ($fine->chargeType == "LostBook" || 
 	     $fine->chargeType == "Replacement" ||
 	     ($fine->chargeType == "Manual" && 
 	       preg_match('/\b(TEST|TRAINING)\b/i',$fine->description)===0 &&
+	       preg_match('/^COLLECTION AGENCY/i',$fine->description)===0 &&
 	       !($fine->itemCharge == 100 || $fine->itemCharge == 800 || $fine->itemCharge == 1600 )
 	     )
 	   ) {
