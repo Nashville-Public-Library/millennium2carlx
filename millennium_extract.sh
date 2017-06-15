@@ -43,7 +43,7 @@ expect get_patrons.exp
 while pgrep -f 'bash fines.sh' | wc -l >/dev/null
 do
 	BFINES=$(pgrep -f 'bash fines.sh' | wc -l)
-	if [[ $BFINES = 0 ]] : then
+	if [[ $BFINES = 0 ]] ; then
 		break
 	fi
 	sleep 30
@@ -71,9 +71,9 @@ chmod 700 ../data/*
 bash report.sh >> ../data/millennium_extract.log
 
 # COMPRESS FILES SHOULD WAIT UNTIL fines.sh IS COMPLETE
-# bash 7z.sh
+bash 7z.sh
 
 # DELIVER FILES
-# expect sftp2tlc.exp
+expect sftp2tlc.exp
 
 exit
