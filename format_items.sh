@@ -28,9 +28,11 @@ perl -F'\t' -lane '
 # DECIDE ON CALL NUMBER VALUE FOR COLUMN 11 > 
 # ITEM CALL NUMBER CONTAINS VALUE, BIB CALL NUMBER CONTAINS VALUE OR NOTHING -> ITEM CALL NUMBER 
 # ITEM CALL NUMBER BLANK, VALUE IN BIB CALL NUMBER -> BIB CALL NUMBER
-# TO DO: FIGURE OUT WHERE PRESTAMP AND VOLUME BELONG
-		$F[11] =~ s/\|/^/g; # REPLACE PIPES WITH CARETS FOR MULTIPLE CALL NUMBERS
+		$F[11] =~ s/\|/^/g; # REPLACE PIPES WITH CARETS FOR MULTIPLE CALL NUMBERS. THESE SHOULD BE ELIMINATED BY MIGRATION: https://trello.com/c/DJYHlqn6
 		$F[10] eq "" ? $F[10]=$F[27] : do { $F[11]=$F[10]; $F[10]=$F[27]; } ; # REPLACE WITH USERID, which is the unintuitive column header for INTL USE $F[27] as per https://ww2.tlcdelivers.com/helpdesk/default.asp?TicketID=422395&tid=6
+# ITEM PRESTAMP AND VOLUME BELONG IN ITEM CALL NUMBER, NOT BUCKETS: https://trello.com/c/dMP5KXLX
+		if ($F[18] ne "") { $F[11] = $F[11] . " " . $F[18]; } # VOLUME
+		if ($F[17] ne "") { $F[11] = $F[17] . " " . $F[11]; } # PRESTAMP
 		$F[9] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[9] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[9] =~ s/^[-\s]+$//; # EDITDATE
 		$F[6]=$F[5]+$F[6]; # CUMULATIVE CIRCULATIONS = TOT CKOUT + TOT RENEW
 		$F[5]=""; # HOLDSHISTORY [blank]
