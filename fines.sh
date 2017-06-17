@@ -13,9 +13,6 @@
 # Launch multiple fines.php processes which
 # Extract Millennium patron fines data via Fines Payment API
 
-# TO DO: get_patrons_with_fines.exp is not completing - or starting? - and I don't know why.
-# TO DO: RERUN PATRONS WITH ERRORS
-
 #echo "Start time"
 #date
 
