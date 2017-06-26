@@ -15,6 +15,10 @@ perl -F'\|' -lane '
 	if ($F[3] =~ m/^card reported (lost|stolen).*$/i) {next;}
 	if ($F[3] =~ m/^card (@|at|found|held|is at|in|left).*$/i) {next;}
 	if ($F[3] =~ m/^(online (- )?)?ca?rd mail.*$/i) {next;}
+# DO NOT MIGRATE MNPS REGISTRATION
+	if($F[3] =~ m/^(EDUCATOR CARD APP).+?$/i) {next;}
+	if($F[3] =~ m/^(MNPS EDUCATOR \d{6}).+?$/i) {next;}
+	if($F[3] =~ m/^(MNPS STUDENT( \d{9})*\; SCHOOL).+?$/i) {next;}
 
 print join q/|/, @F;' ../data/PATRON_NOTE.txt > ../data/PATRON_NOTE_CLEANER.txt
 
