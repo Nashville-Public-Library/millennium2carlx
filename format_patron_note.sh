@@ -19,6 +19,9 @@ perl -F'\|' -lane '
 	if($F[3] =~ m/^(EDUCATOR CARD APP).+?$/i) {next;}
 	if($F[3] =~ m/^(MNPS EDUCATOR \d{6}).+?$/i) {next;}
 	if($F[3] =~ m/^(MNPS STUDENT( \d{9})*\; SCHOOL).+?$/i) {next;}
+# DO NOT MIGRATE OFF-SITE REGISTRATION
+	if($F[3] =~ m/^(APPLICATION OBTAINED THROUGH GROW|BBTL|BOOTH|BRINGING BOOKS TO LIFE|EVENT REGISTRATION|MAYOR.S FIRST DAY OUT|OUTREACH\:|REGISTRATION AT).+?$/i) {next;}
+
 
 print join q/|/, @F;' ../data/PATRON_NOTE.txt > ../data/PATRON_NOTE_CLEANER.txt
 
