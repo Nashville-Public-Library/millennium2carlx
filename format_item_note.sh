@@ -14,6 +14,8 @@ perl -F'\|' -lane '
 	if($F[4] =~ m/^tested.*\b(fine|ok|works)\b.*/i) {next;}
 # DO NOT MIGRATE REPLACED BARCODE
 	if($F[4] =~ m/^35192\d{9}.*$/i) {next;}
+# DO NOT MIGRATE CLAIMED RETURNED
+	if($F[4] =~ m/^.+\d{4}: Claimed returned on .+?by \.p\d+[\dx]$/i) {next;}
 
 print join q/|/, @F;' ../data/ITEM_NOTE.txt > ../data/ITEM_NOTE_CLEANER.txt
 #mv -f ../data/ITEM_NOTE_CLEANER.txt ../data/ITEM_NOTE.txt
