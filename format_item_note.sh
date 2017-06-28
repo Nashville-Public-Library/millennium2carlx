@@ -16,6 +16,7 @@ perl -F'\|' -lane '
 	if($F[4] =~ m/^35192\d{9}.*$/i) {next;}
 # DO NOT MIGRATE CLAIMED RETURNED
 	if($F[4] =~ m/^.+\d{4}: Claimed returned on .+?by \.p\d+[\dx]$/i) {next;}
-
+# DO NOT MIGRATE ON DISPLAY
+	if($F[4] =~ m/on display/i) {next;}
 print join q/|/, @F;' ../data/ITEM_NOTE.txt > ../data/ITEM_NOTE_CLEANER.txt
 #mv -f ../data/ITEM_NOTE_CLEANER.txt ../data/ITEM_NOTE.txt
