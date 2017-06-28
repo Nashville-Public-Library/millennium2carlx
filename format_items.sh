@@ -18,9 +18,9 @@ sort -t'|' -k 1 ../data/LOOKUP_ITEM.txt > ../data/SORTED_LOOKUP_ITEM.txt
 # TODO: check each record for pipe characters, e.g., multiple barcodes, multiple call numbers, and figure out how to eliminate them!
 perl -F'\t' -lane '
 # DO NOT MIGRATE ITEM STATUS $eghlwz
-#	$F[3] =~ m/[\$eghlwz]/ ? do {next;} : do { 
+	$F[3] =~ m/[\$eghlwz]/ ? do {next;} : do { 
 # DO NOT MIGRATE ITEM STATUS $eglw
-	$F[3] =~ m/[\$eglw]/ ? do {next;} : do { 
+#	$F[3] =~ m/[\$eglw]/ ? do {next;} : do { 
 		$F[13] =~ s/^(\d{2})-(\d{2})-(\d{2})$/19$3-$1-$2/; $F[13] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[13] =~ s/^[-\s]+$//; # CREATIONDATE
 		$F[13] = "||||".$F[13]."|||"; # INSERT 4 BLANK COLUMNS PRECEDING AND 2 BLANK COLUMNS FOLLOWING CREATIONDATE FOR CALL NUMBER BUCKET 1-4; SUPPRESS; SUPPRESS TYPE; AND A FINAL PIPE
 		$F[12] =~ s/^((ar|ax|bl|bx|coll|do|ea|eh|ep|gh|go|ha|hi|hm|ill|in|lo|ma|mn|no|oh|pr|prof|ps|rp|se|talib|tl|ts|wp).*?)$/$2|$1/; # INSERT BRANCH VALUE AT COLUMN 13
@@ -142,3 +142,5 @@ cat ../data/ITEM_NOTE_NOTE.txt >> ../data/ITEM_NOTE.txt
 perl -pi -e 'print "REFID|ITEMBARCODE|NOTETYPE|TIMESTAMP|TEXT|\n" if $. == 1' ../data/ITEM_NOTE.txt
 # REMOVE ITEM NOTE FILES
 rm -f ../data/ITEM_NOTE_*.txt
+
+bash format_item_note.sh
