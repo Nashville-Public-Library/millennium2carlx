@@ -27,6 +27,8 @@ perl -F'\t' -lane '
 # COLLECTIONSTATUS
         $F[2] eq "c" ? do {$COLLECTIONSTATUS = "2";} : ($F[1] =~ /^(0|2|3|4|5|6|12|15|30)$/ ? do {$COLLECTIONSTATUS = "1";} : do {$COLLECTIONSTATUS = "78"});
         $F[17] = "$COLLECTIONSTATUS|$F[17]";
+# DEFAULTBRANCH FROM MILLENNIUM REG LIB AKA PCODE2 : https://trello.com/c/qKpV9dzF
+	if($F[16] =~ m/^[- kv]*$/) {$F[16] = "1";}
 #
         $F[14] =~ s/^(\d{2})-(\d{2})-(\d{4})$/$3-$1-$2/; $F[14] =~ s/^[-\s]+$//;
 #
@@ -268,3 +270,5 @@ cat ../data/PATRON_NOTE_NOTE.txt >> ../data/PATRON_NOTE.txt
 rm -f ../data/PATRON_NOTE_*.txt
 # ADD CARL HEADERS
 perl -pi -e 'print "REFID|NOTETYPE|TIMESTAMP|TEXT|\n" if $. == 1' ../data/PATRON_NOTE.txt
+
+bash format_patron_note.sh
