@@ -19,4 +19,4 @@ perl -F'\|' -lane '
 # DO NOT MIGRATE ON DISPLAY
 	if($F[4] =~ m/on display/i) {next;}
 print join q/|/, @F;' ../data/ITEM_NOTE.txt > ../data/ITEM_NOTE_CLEANER.txt
-#mv -f ../data/ITEM_NOTE_CLEANER.txt ../data/ITEM_NOTE.txt
+mv -f ../data/ITEM_NOTE_CLEANER.txt ../data/ITEM_NOTE.txt
