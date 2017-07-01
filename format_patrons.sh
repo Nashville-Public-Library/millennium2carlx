@@ -165,7 +165,7 @@ perl -F'\t' -lane '
 			if ($_ =~ m/^MNPS Guarantor/) {
 	                        $_ = "|601||$_"; # assign MNPS Guarantor NOTETYPE 601
 			} else {
-	                        $_ = "|600||$_";
+	                        $_ = "|600||GUARANTOR: $_";
 			}
                         $_ = $F[0].$_."|";
                         print $_;
