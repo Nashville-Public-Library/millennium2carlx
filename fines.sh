@@ -40,6 +40,8 @@ do
 	php fines.php $i &
 done
 
+sleep 30
+
 while pgrep -f 'fines.php [0-9]' | wc -l >/dev/null
 do 
 	PROCS=$(pgrep -f 'fines.php [0-9]' | wc -l)
