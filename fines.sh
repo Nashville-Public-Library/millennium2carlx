@@ -64,7 +64,7 @@ sort ../data/fines-errors
 #awk '{print substr($1,2)}' ../data/fines-errors > ../data/fines-patronIds
 #bash fines.sh 10 ../data/fines-patronIds
 
-rm -f ../data/fines-output
+rm -f ../data/fines-output-raw
 cat ../data/fines-output.* >> ../data/fines-output-raw
 sort ../data/fines-output-raw | uniq > ../data/fines-output
 rm -f ../data/fines-output.*
