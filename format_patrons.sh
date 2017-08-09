@@ -165,6 +165,7 @@ perl -F'\t' -lane '
 			if ($_ =~ m/^MNPS Guarantor/) {
 	                        $_ = "|601||$_"; # assign MNPS Guarantor NOTETYPE 601
 			} else {
+				$_ =~ s/ +$//;
 	                        $_ = "|600||GUARANTOR: $_";
 			}
                         $_ = $F[0].$_."|";
@@ -174,6 +175,17 @@ perl -F'\t' -lane '
 	' ../data/millennium_extract-05.txt > ../data/PATRON_NOTE_GUARANTOR.txt
 # REMOVE MILLENNIUM HEADERS
 perl -pi -e '$_ = "" if ( $. == 1 )' ../data/PATRON_NOTE_GUARANTOR.txt
+
+# PATRON NOTE GUARANTOR/GUARDIAN FROM ADDRESS C/O 
+#SETA=`wc -l ../data/PATRON_NOTE_GUARANTOR.txt`
+#echo $SETA
+#awk -F'|' 'toupper($10) ~ /(C\/[O0]|%) *(.+?) *(,|\$|$)/ {print $1 "|600||GUARANTOR: " gensub(/(C\/[O0]|%) *([^,\$]+?)( *(,|\$|$).*)$/,"\\2","g",toupper($10)) "|"}' ../data/PATRON.txt >> ../data/PATRON_NOTE_GUARANTOR.txt
+#SETB=`wc -l ../data/PATRON_NOTE_GUARANTOR.txt`
+#echo $SETB
+#sort ../data/PATRON_NOTE_GUARANTOR.txt > ../data/PATRON_NOTE_GUARANTOR_SORTED.txt
+#uniq ../data/PATRON_NOTE_GUARANTOR_SORTED.txt > ../data/PATRON_NOTE_GUARANTOR.txt
+#SETC=`wc -l ../data/PATRON_NOTE_GUARANTOR.txt`
+#echo $SETC
 
 # ELIMINATE MNPS GUARANTOR RECORDS WHERE PATRON HAS NO ENTRIES IN TRANSITEM_CHECKOUT OR TRANSITEM_FINES
 # TIMING COULD BE PROBLEMATIC - TRANSITEM_FINES NEEDS TO BE COMPLETE
