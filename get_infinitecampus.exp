@@ -60,8 +60,19 @@ set timeout -1
 expect -re $prompt
 send "chmod 700 ../data/INFINITECAMPUS*\r"
 expect -re $prompt
-
 close
 set timeout $wait
+
+# PACKAGE INFINITE CAMPUS FILES
+set today [clock format [clock seconds] -format "%y%m%d"]
+spawn 7za u ../data/$today_Nashville_InfiniteCampus.7z ../data/INFINITECAMPUS.txt -p$ic7zaPassword
+expect eof
+spawn 7za u ../data/$today_Nashville_InfiniteCampus.7z ../data/CARLX_INFINITECAMPUS_STAFF.txt -p$ic7zaPassword
+expect eof
+spawn 7za u ../data/$today_Nashville_InfiniteCampus.7z ../data/CARLX_INFINITECAMPUS_STUDENT.txt -p$ic7zaPassword
+expect eof
+
+# TO DO: deliver the package to nashapp
+
 logWrite $logFile "COMPLETE format_infinitecampus"
 
