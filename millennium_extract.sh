@@ -10,7 +10,7 @@
 expect cleanup.exp
 
 # GET INFINITE CAMPUS
-expect get_infinitecampus.exp &
+# expect get_infinitecampus.exp &
 
 # GET AUTHORITY FILE
 expect get_authority.exp &
@@ -28,6 +28,7 @@ expect get_codes.exp &
 expect get_patron_reading_history_opt_in.exp &
 
 # GET PINS (NOT BACKGROUND INITIALLY!)
+sleep 1
 expect get_pins.exp
 bash format_pin.sh &
 
