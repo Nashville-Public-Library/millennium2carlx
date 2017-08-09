@@ -35,6 +35,9 @@ perl -F'\|' -lane '
 	if ($F[0] !~ m/^\d{6}$/) { next; }
 
 # SCHOOL LIBRARIANS
+# TO DO : make ad hoc report!
+# select patronid from patron_v where bty = 40 and length(patronid) = 6 order by patronid;
+
 	@schoolLibrarians = (107639,
 		107673,
 		117678,
@@ -90,6 +93,7 @@ perl -F'\|' -lane '
 		430548,
 		433782,
 		437613,
+		440140,
 		445552,
 		447445,
 		448122,
@@ -104,7 +108,6 @@ perl -F'\|' -lane '
 		462342,
 		469861,
 		472555,
-		479414,
 		497215,
 		497769,
 		497835,
@@ -133,6 +136,7 @@ perl -F'\|' -lane '
 		501160,
 		501197,
 		501221,
+		501222,
 		501318,
 		501367,
 		501446,
@@ -153,6 +157,7 @@ perl -F'\|' -lane '
 		502864,
 		502925,
 		503015,
+		503112,
 		503175,
 		503254,
 		503334,
@@ -234,7 +239,7 @@ perl -F'\|' -lane '
 # REPLACE PIPE DELIMITERS WITH COMMAS
 	print join q/,/, @F' ../data/CARLX_INFINITECAMPUS_STAFF.txt > ../data/INFINITECAMPUS_STAFF.txt;
 # REPLACE HEADERS
-#perl -pi -e '$_ = qq/"Patron ID","Borrower type code","Patron last name","Patron first name","Patron middle name","Patron suffix","Primary Street Address","Primary City","Primary State","Primary Zip Code","Secondary Street Address","Secondary City","Secondary State","Secondary Zip Code","Primary Phone Number","Secondary Phone Number","Alternate ID","Non-validated Stats","Default Branch","Validated Stat Codes","Status Code","Registration Date","Last Action Date","Expiration Date","Email Address","Notes","Birth Date","Guardian","Racial or Ethnic Category","Lap Top Check Out","Limitless Library Use","Tech Opt Out","Teacher ID","Teacher Name"\n/ if ( $. == 1 )' ../data/INFINITECAMPUS_STAFF.txt
+perl -pi -e '$_ = qq/"Patron ID","Borrower type code","Patron last name","Patron first name","Patron middle name","Patron suffix","Primary Street Address","Primary City","Primary State","Primary Zip Code","Secondary Street Address","Secondary City","Secondary State","Secondary Zip Code","Primary Phone Number","Secondary Phone Number","Alternate ID","Non-validated Stats","Default Branch","Validated Stat Codes","Status Code","Registration Date","Last Action Date","Expiration Date","Email Address","Notes","Birth Date","Guardian","Racial or Ethnic Category","Lap Top Check Out","Limitless Library Use","Tech Opt Out","Teacher ID","Teacher Name"\n/ if ( $. == 1 )' ../data/INFINITECAMPUS_STAFF.txt
 
 # CONCATENATE STUDENT AND STAFF FILES
-cat ../data/INFINITECAMPUS_STUDENT.txt ../data/INFINITECAMPUS_STAFF.txt > ../data/INFINITECAMPUS.txt
+#cat ../data/INFINITECAMPUS_STUDENT.txt ../data/INFINITECAMPUS_STAFF.txt > ../data/INFINITECAMPUS.txt

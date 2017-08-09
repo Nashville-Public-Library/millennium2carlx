@@ -66,15 +66,21 @@ set timeout $wait
 # PACKAGE INFINITE CAMPUS FILES
 set today [clock format [clock seconds] -format "%Y%m%d"]
 spawn bash
-send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/INFINITECAMPUS.txt -p$ic7zaPassword\n"
+#send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/INFINITECAMPUS.txt -p$ic7zaPassword\n"
+#expect -re $prompt
+#sleep 5
+send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/INFINITECAMPUS_STAFF.txt -p$ic7zaPassword\n"
 expect -re $prompt
 sleep 5
-send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/CARLX_INFINITECAMPUS_STAFF.txt -p$ic7zaPassword\n"
+send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/INFINITECAMPUS_STUDENT.txt -p$ic7zaPassword\n"
 expect -re $prompt
 sleep 5
-send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/CARLX_INFINITECAMPUS_STUDENT.txt -p$ic7zaPassword\n"
-expect -re $prompt
-sleep 5
+#send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/CARLX_INFINITECAMPUS_STAFF.txt -p$ic7zaPassword\n"
+#expect -re $prompt
+#sleep 5
+#send "7za u ../data/${today}_Nashville_InfiniteCampus.7z ../data/CARLX_INFINITECAMPUS_STUDENT.txt -p$ic7zaPassword\n"
+#expect -re $prompt
+#sleep 5
 close
 
 # TO DO: deliver the package to nashapp
