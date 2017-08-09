@@ -1,6 +1,8 @@
 # STUDENTS
 perl -F'\|' -lane '
 
+# SET STATUS = GOOD; SHOULD NOT OVERWRITE CARL.X STATUS
+	$F[20] = "G";
 # NORMALIZE DATE VALUE FOR EXPIRATION
 #	if ($F[23] =~ /(\d{2})\/(\d{2})\/(\d{4})/) { $F[23] =~ s/(\d{2})\/(\d{2})\/(\d{4})/$3-$1-$2/; }
 # CHANGE DATE VALUE FOR EXPIRATION TO 2018-08-04
@@ -210,6 +212,9 @@ perl -F'\|' -lane '
 		861034,
 		865739);
 	if (grep(/^$F[0]$/,@schoolLibrarians)) {$F[1]=40;}
+
+# SET STATUS = GOOD; SHOULD NOT OVERWRITE CARL.X STATUS
+	$F[20] = "G";
 
 # CHANGE DATE VALUE FOR EXPIRATION TO 2018-08-04
 	$F[23] = "2018-08-04";
