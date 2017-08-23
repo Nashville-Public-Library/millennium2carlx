@@ -1,6 +1,16 @@
 # STUDENTS
 perl -F'\|' -lane '
 
+# SKIP STUDENTS AT NON-ELIGIBLE SCHOOLS
+	if ($F[18] =~ m/^(72211|73422|74562|76613)$/) { next; }
+# ASSIGN NON-DELIVERY BORROWER TYPE TO ONLINE-ONLY STUDENT PATRONS
+	elsif ($F[18] =~ m/^(70142)$/) { $F[1] = 37; }
+# SET BORROWER TYPE FOR LIMITLESS LIBRARIES OPT-OUT STUDENTS
+	elsif ($F[30] =~ m/^N$/) {
+		if ($F[1] =~ m/^(25|26)$/) { $F[1] = 35; }
+		elsif ($F[1] =~ m/^(27|28|29|30)$/) { $F[1] = 36; }
+		elsif ($F[1] =~ m/^(31|32|33|34)$/) { $F[1] = 37; }
+	} 
 # SET STATUS = GOOD; SHOULD NOT OVERWRITE CARL.X STATUS
 	$F[20] = "G";
 # NORMALIZE DATE VALUE FOR EXPIRATION
